@@ -8,6 +8,7 @@ public class Tournament {
     private String thirdPlace;
     private int[] scores;
 
+
     public void tournamentDetails(){
 
     }
@@ -20,6 +21,9 @@ public class Tournament {
 
     }
 
+    public int getSportName(int id){ // Needs work
+        return getSportName(id);
+    }
 
 
 }
