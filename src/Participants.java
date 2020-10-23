@@ -37,7 +37,7 @@ public class Participants {
     		count++; // helps changes to the next item in the array
     	}
     	else if (count < MAX_PARTICIPANTS){ // adding participants to the rest of the array 
-    		participants[count] = firstName + " " + lastName + " AGE=" + age;
+    		participants[count] = "FIRST NAME=" + firstName + " " + "LAST NAME=" + lastName + " AGE=" + age;
     		count++;
     	}
 
