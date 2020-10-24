@@ -1,70 +1,76 @@
 //
 //	W.I.P
-//	probably need to work out on how to output it not in an array
-//
 
 import java.util.Arrays;
 
 public class Participants {
-	//const variables just to test
-	private final int MAX_PARTICIPANTS = 3;
+	//const variables
+	private final int MAX_PARTICIPANTS = 3; // just for testing
+    private String[] header = {"ID", "FIRST NAME", "LAST NAME", "AGE"};
 	
 	//variables
-    private String firstName;
-    private String lastName;
-    private int age;
+	private int[] participantID;
+    private String[] firstName;
+    private String[] lastName;
+    private int[] age;
     private String[] participants;
-    private static int count = 0;
+    private static int count;
     
     public Participants() { //default constructor
     	init();
     }
     
     public void init() { //setting variables when the constructor is made
+    	participantID = new int[MAX_PARTICIPANTS];
+    	firstName = new String[MAX_PARTICIPANTS];
+    	lastName = new String[MAX_PARTICIPANTS];
+    	age = new int[MAX_PARTICIPANTS];
 		participants = new String[MAX_PARTICIPANTS];
+		count = 0;
     }
 
-    public String listParticipants(){ //list the array if needed
-		return Arrays.toString(participants);
+    public void listParticipants(){ //list in order
+    	for (int i = 0; i < header.length; i++) {
+    		System.out.printf("%-12s ", header[i]);
+    	}
+		for (int j = 0; j < MAX_PARTICIPANTS; j++) {
+			System.out.printf("\n%-12s ",participantID[j]);
+			System.out.printf("%-12s ", firstName[j]);
+			System.out.printf("%-12s ",lastName[j]);
+			System.out.printf("%-12s ", age[j]);
+		}
     }
 
-    public void addParticipants(String last, String first, int num){
-    	firstName = first;
-    	lastName = last; 
-    	age = num;
-    	if (participants[0] == null) { //if the first item is empty, then put the first participant in the first item
-    		participants[0] = "FIRST NAME=" + firstName + " " + "LAST NAME=" + lastName + " AGE=" + age; 
-    		count++; // helps changes to the next item in the array
-    	}
-    	else if (count < MAX_PARTICIPANTS){ // adding participants to the rest of the array 
-    		participants[count] = "FIRST NAME=" + firstName + " " + "LAST NAME=" + lastName + " AGE=" + age;
-    		count++;
-    	}
-
+    public void addParticipants(String lastN, String firstN, int ageN){
+    	participantID[count] = count + 1;
+    	firstName[count] = firstN;
+    	lastName[count] = lastN; 
+    	age[count] = ageN;
+    	count++;  	
     }
     
     //GETTERS AND SETTERS
-	public String getFirstName() {
+	public String[] getFirstName() {
 		return firstName;
 	}
 
-	public void setFirstName(String firstName) {
+	public void setFirstName(String[] firstName) {
 		this.firstName = firstName;
 	}
 
-	public String getLastName() {
+	public String[] getLastName() {
 		return lastName;
 	}
 
-	public void setLastName(String lastName) {
+	public void setLastName(String[] lastName) {
 		this.lastName = lastName;
 	}
 
-	public int getAge() {
+	public int[] getAge() {
 		return age;
 	}
 
-	public void setAge(int age) {
+	public void setAge(int[] age) {
 		this.age = age;
 	}
 
@@ -77,19 +83,13 @@ public class Participants {
 	}
 	//GETTERS AND SETTERS END
 	
-@Override
-public String toString() {
-	return Arrays.toString(participants); //outputs the participants in an array
-}
-	
-// EXAMPLE OF IT WORKING IN THIS CLASS
-//		this probably needs work so that we can put it into arguments instead?
+// testing
 //	public static void main(String[] args) {
 //		Participants obj = new Participants();
 //		obj.addParticipants("susan", "marry", 23);
 //		obj.addParticipants("doe", "john", 21);
 //		obj.addParticipants("rey", "adam", 11);
-//		System.out.print(obj);
+//		obj.listParticipants();
 //	}
 
 }
