@@ -2,7 +2,6 @@ import java.io.*;
 import java.util.Scanner;
 
 public class Countries {
-    public static String pattern; // Pattern used to check for uppercase letters for the country abbreviations
     private int[] countryID;
     private String[] countryName;
     private String[] countryAbbreviations;
@@ -13,7 +12,6 @@ public class Countries {
     }
 
     public void init(){
-        pattern = "[A-Z]*";
         countryID = new int[193];
         countryName = new String[193];
         countryAbbreviations = new String[193];
@@ -23,10 +21,6 @@ public class Countries {
     // Accessor Functions
     public void addCountry(){
 
-    }
-
-    public String getPattern(){
-        return pattern;
     }
 
     public int getCountryID(int index){
@@ -61,10 +55,6 @@ public class Countries {
         Scanner sc = new Scanner(new File("C:\\Olympic-Games-Management\\src\\csvFiles\\countries.csv"));
         sc.useDelimiter(",|\\n");
 
-        // KNOWN ISSUE!!
-        // Unable to read in all data into private variables.
-        // Once the program begins to read ID 180 an exception is thrown:
-        // Exception in thread "main" java.util.InputMismatchException
         while (sc.hasNext()) {
             int i = 0;
             Country.setCountryID(sc.nextInt(), i);

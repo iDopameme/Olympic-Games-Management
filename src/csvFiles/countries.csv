@@ -1,3 +1,4 @@
+ID,Country,Abbreviation
 4,Afghanistan,AF
 8,Albania,AL
 12,Algeria,DZ
@@ -37,7 +38,7 @@
 170,Colombia,CO
 174,Comoros,KM
 178,Congo,CG
-180,"Congo, Democratic Republic of the",CD
+180,Democratic Republic of the Congo,CD
 188,Costa Rica,CR
 384,Côte d'Ivoire,CI
 191,Croatia,HR
@@ -87,8 +88,8 @@
 398,Kazakhstan,KZ
 404,Kenya,KE
 296,Kiribati,KI
-408,Korea (Democratic People's Republic of),KP
-410,"Korea, Republic of",KR
+408,North Korea,KP
+410,South Korea,KR
 414,Kuwait,KW
 417,Kyrgyzstan,KG
 418,Lao People's Democratic Republic,LA
@@ -111,7 +112,7 @@
 480,Mauritius,MU
 484,Mexico,MX
 583,Micronesia (Federated States of),FM
-498,"Moldova, Republic of",MD
+498,Moldova Republic of Moldova,MD
 492,Monaco,MC
 496,Mongolia,MN
 499,Montenegro,ME
@@ -168,7 +169,7 @@
 756,Switzerland,CH
 760,Syrian Arab Republic,SY
 762,Tajikistan,TJ
-834,"Tanzania, United Republic of",TZ
+834,United Republic of Tanzania,TZ
 764,Thailand,TH
 626,Timor-Leste,TL
 768,Togo,TG
