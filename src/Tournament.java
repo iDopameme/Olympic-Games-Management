@@ -75,9 +75,5 @@ public class Tournament {
 
     }
 
-    public int getSportName(int id){ // Needs work
-        return getSportName(id);
-    }
-
 
 }

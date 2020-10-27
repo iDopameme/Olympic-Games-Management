@@ -6,15 +6,17 @@ public class Countries {
     private String[] countryName;
     private String[] countryAbbreviations;
     private String[] participatingCountries;
+    protected final static int TOTAL_COUNTRIES = 193;
 
     Countries(){
         init();
     }
 
     public void init(){
-        countryID = new int[193];
-        countryName = new String[193];
-        countryAbbreviations = new String[193];
+        countryID = new int[TOTAL_COUNTRIES];
+        countryName = new String[TOTAL_COUNTRIES];
+        countryAbbreviations = new String[TOTAL_COUNTRIES];
+
     }
 
     ///////////////////////////////////////////////////////

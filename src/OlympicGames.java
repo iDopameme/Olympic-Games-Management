@@ -1,17 +1,16 @@
 public class OlympicGames {
     public static void main(String[] args) {
 
+        Sports mySports = new Sports();
+        Participants players = new Participants();
 
-        //////////////////////////////////////////////
-        // Testing Sports.java
-        Sports mySport = new Sports(); // Declaring instance of Sports.java in OlympicGames
-        mySport.outputAllSports();
-//        System.out.println(mySport.getSportID("Football"));
-        
-        //////////////////////////////////////////////
-        // Testing Tournament.java
-        Tournament game = new Tournament();
-        System.out.print("\n");
-        game.tournamentDetails();
+        mySports.setSports("Football");
+        mySports.setSports("Volleyball");
+        mySports.setSports("Tennis");
+        mySports.setSports("Athletics");
+        mySports.setSports("Swimming");
+
+
+
     }
 }

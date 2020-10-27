@@ -3,7 +3,10 @@
 
 import java.util.Arrays;
 
-public class Participants {
+
+
+public class Participants extends Countries {
+
 	//const variables
 	private final int MAX_PARTICIPANTS = 3; // just for testing
     private String[] header = {"ID", "FIRST NAME", "LAST NAME", "AGE"};
@@ -15,6 +18,7 @@ public class Participants {
     private int[] age;
     private String[] participants;
     private static int count;
+    private String[] pCountry;
     
     public Participants() { //default constructor
     	init();
@@ -26,6 +30,7 @@ public class Participants {
     	lastName = new String[MAX_PARTICIPANTS];
     	age = new int[MAX_PARTICIPANTS];
 		participants = new String[MAX_PARTICIPANTS];
+		pCountry = new String[TOTAL_COUNTRIES]; // 193 is temporary. Should be a final variable
 		count = 0;
     }
 

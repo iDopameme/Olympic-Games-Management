@@ -3,20 +3,26 @@
 // Currently working out the concept of linking Sports with the rest of the java classes
 //////////////////////////////////////////////////////////////////////////////////////////
 
-public class Sports {
+
+public class Sports extends Tournament {
     // Constants
     private final static int SPORTS_CAPACITY = 10;
     // Private & Protected Variables
     protected int[] sportID;
     private String[] sports;
+    private int idCount;
 
     // Default Constructor -- Default Sports
     Sports(){
-        // sports = new String[]{"Vollyeball", "Basketball", "Football", "Boxing", "Tennis", "Swimming", "Archery", "Judo", "Baseball", "Table Tennis"};
-        sports = new String[SPORTS_CAPACITY];
-        sportID = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        init();
     }
 
+
+    public void init(){
+        sports = new String[SPORTS_CAPACITY];
+        sportID = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        idCount = 0;
+    }
 
     //////////////////////////////////////
     // Accessor Functions
@@ -38,8 +44,10 @@ public class Sports {
 
     //////////////////////////////////////
     // Mutator Functions
-    public void setSports(){
-        //unsure if this is necessary for this class
+    public void setSports(String s){
+        sports[idCount] = s;
+        System.out.println(s + " is in array index " + idCount);
+        idCount++;
     }
 
     public void outputAllSports(){
@@ -49,5 +57,27 @@ public class Sports {
     }
 
 
+    public boolean linkPlayerSport(String s, String player){ // Links what sport every player participates in...
+        //if ()
+        //    return true;
+
+        return false;
+    }
+
+    //////////////////////////////////////
+    // Experimental ideas
+
+    public void teamSport(){ // This class handles team sports which will have multiple players
+
+    }
+
+    public void headToHeadSport(){ // This class handles head to head sports which contains just 2 players
+
+    }
+
+    public static void main(String[] args) {
+
+
+    }
 
 }
