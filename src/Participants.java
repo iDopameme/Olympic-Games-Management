@@ -2,6 +2,7 @@
 //	W.I.P
 
 import java.util.Arrays;
+import java.util.ArrayList;
 
 
 
@@ -9,7 +10,7 @@ public class Participants extends Countries {
 
 	//const variables
 	private final int MAX_PARTICIPANTS = 3; // just for testing
-    private String[] header = {"ID", "FIRST NAME", "LAST NAME", "AGE"};
+    private String[] header = {"ID", "FIRST NAME", "LAST NAME", "AGE"}; // ???
 	
 	//variables
 	private int[] participantID;
@@ -30,14 +31,14 @@ public class Participants extends Countries {
     	lastName = new String[MAX_PARTICIPANTS];
     	age = new int[MAX_PARTICIPANTS];
 		participants = new String[MAX_PARTICIPANTS];
-		pCountry = new String[TOTAL_COUNTRIES]; // 193 is temporary. Should be a final variable
+		pCountry = new String[TOTAL_COUNTRIES];
 		count = 0;
     }
 
     public void listParticipants(){ //list in order
-    	for (int i = 0; i < header.length; i++) {
-    		System.out.printf("%-12s ", header[i]);
-    	}
+		for (String s : header) {
+			System.out.printf("%-12s ", s);
+		}
 		for (int j = 0; j < MAX_PARTICIPANTS; j++) {
 			System.out.printf("\n%-12s ",participantID[j]);
 			System.out.printf("%-12s ", firstName[j]);
