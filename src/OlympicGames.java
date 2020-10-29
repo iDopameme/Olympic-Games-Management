@@ -10,7 +10,7 @@ public class OlympicGames {
         mySports.setSports("Athletics");
         mySports.setSports("Swimming");
 
-
+        mySports.outputArrayList();
 
     }
 }
