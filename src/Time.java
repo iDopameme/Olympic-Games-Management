@@ -2,6 +2,7 @@
 import java.util.Date;
 import java.util.Calendar;
 import java.util.Random;
+import Database.Connect;
 
 //// wip
 ///// NEED TO FIX THE HOURS + make it cleaner coz it doesnt randomize all the hours between now and the end of the day
