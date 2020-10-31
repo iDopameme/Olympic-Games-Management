@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.Scanner;
 import java.util.ArrayList;
+import Database.Connect;
 
 public class Countries {
     private int[] countryID;
@@ -50,27 +51,6 @@ public class Countries {
 
     public void setCountryAbbreviations(String n, int index){
         countryAbbreviations[index] = n;
-    }
-
-    public static void main(String[] args) throws FileNotFoundException {
-        Countries Country = new Countries();
-
-        Scanner sc = new Scanner(new File("C:\\Olympic-Games-Management\\src\\csvFiles\\countries.csv"));
-        sc.useDelimiter(",|\\n");
-
-        while (sc.hasNext()) {
-            int i = 0;
-            Country.setCountryID(sc.nextInt(), i);
-            Country.setCountryName(sc.next(), i);
-            Country.setCountryAbbreviations(sc.next(), i);
-
-            System.out.print(Country.getCountryID(i) + " ");
-            System.out.print(Country.getCountries(i) + " ");
-            System.out.print(Country.getCountryAbbreviations(i) + "\n" );
-            i++;
-
-        }
-
     }
 
 }
