@@ -5,16 +5,14 @@ import java.util.Scanner;
 
 public class Connect {
     private Connection conn = null;
-    private String url = "jdbc:mysql://localhost/olympics";
-    private String userName = "";
-    private String password = "";
+    private final String url = "jdbc:mysql://localhost/olympics";
     Scanner myObj = new Scanner(System.in);
 
     public void startConn(){
-        System.out.printf("UserName Login: ");
-        userName = myObj.nextLine();
-        System.out.printf("Password: ");
-        password = myObj.nextLine();
+        System.out.print("UserName Login: ");
+        String userName = myObj.nextLine();
+        System.out.print("Password: ");
+        String password = myObj.nextLine();
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
