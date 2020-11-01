@@ -1,9 +1,7 @@
 import java.io.*;
 import java.sql.*;
 import java.util.Scanner;
-import java.util.ArrayList;
 import Database.Connect;
-import com.mysql.cj.protocol.Resultset;
 
 public class Countries {
     private int[] countryID;
@@ -26,7 +24,8 @@ public class Countries {
 
     ///////////////////////////////////////////////////////
     // Accessor Functions
-    public void getCountryID(String n){
+    public int getCountryID(String n){
+        int id = 0;
         try {
             database.startConn();
             String sql = "SELECT * FROM olympics.countries WHERE cName = ?";
@@ -35,27 +34,46 @@ public class Countries {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                int id = rs.getInt("ID");
-                String name = rs.getString("cName");
-                String abbrev = rs.getString("cAbbrev");
-                System.out.println(id + "      " + name + "       " + abbrev);
+                id = rs.getInt("ID");
+//                String name = rs.getString("cName");
+//                String abbrev = rs.getString("cAbbrev");
+                System.out.println(n + "'s ID is: " + id); // TEMPORARY
             }
             rs.close();
         } catch (SQLException e) {
-            System.out.println("SQL exeception occured" + e);
+            System.out.println("SQL exception occurred" + e);
         }
+
         database.endConn();
-    }
+        return id;
+    } // Obtaining the ID of a country name you pass through
 
-    public String getCountries(int index){
-        return countryName[index];
-    }
+    public String getCountries(int i){
+        String name = "";
+        String ab = "";
+        try {
+            database.startConn();
+            String sql = "SELECT * FROM olympics.countries WHERE ID = ?";
+            PreparedStatement pstmt = database.getConn().prepareStatement(sql);
+            pstmt.setInt(1, i);
+            ResultSet rs = pstmt.executeQuery();
 
-    public String getCountryAbbreviations(int index){
-        return countryAbbreviations[index];
-    }
+            while (rs.next()) {
+                name = rs.getString("cName");
+                ab = rs.getString("cAbbrev");
 
-    public void outputTable() throws SQLException {
+                System.out.println("The country with ID " + i + " is: " + name +", " + ab); // TEMPORARY
+            }
+            rs.close();
+        } catch (SQLException e) {
+            System.out.println("SQL exception occurred" + e);
+        }
+
+        database.endConn();
+        return name + ab;
+    } // Obtaining the name of the country by passing the ID
+
+    public void outputTable(){
         try {
             database.startConn();
             Statement stmt = database.getConn().createStatement();
@@ -69,7 +87,7 @@ public class Countries {
                 System.out.println(id + "     " + name + "     " + abbrev);
             }
         } catch(SQLException e) {
-            System.out.println("SQL exception occured" + e);
+            System.out.println("SQL exception occurred" + e);
         }
         database.endConn();
     }
@@ -117,15 +135,15 @@ public class Countries {
 
     public void setCountryID(int id, int index){
         countryID[index] = id;
-    }
+    } // WIP
 
     public void setCountryName(String name, int index){
         countryName[index] = name;
-    }
+    } // WIP
 
     public void setCountryAbbreviations(String n, int index){
         countryAbbreviations[index] = n;
-    }
+    } // WIP
 
 }
 

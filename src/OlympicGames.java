@@ -14,7 +14,7 @@ public class OlympicGames {
         Connect database = new Connect();
         Countries country = new Countries();
 
-        country.getCountryID("Belgium");
+        System.out.println(country.getCountryID("Belgium"));
 
     }
 }
