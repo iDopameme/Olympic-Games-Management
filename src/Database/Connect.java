@@ -1,14 +1,21 @@
 package Database;
 
 import java.sql.*;
+import java.util.Scanner;
 
 public class Connect {
     private Connection conn = null;
-    private String url = "jdbc:mysql://127.0.0.1/olympics";
-    private String userName = "Richie";
-    private String password = "8yWc1!IZ";
+    private String url = "jdbc:mysql://localhost/olympics";
+    private String userName = "";
+    private String password = "";
+    Scanner myObj = new Scanner(System.in);
 
     public void startConn(){
+        System.out.printf("UserName Login: ");
+        userName = myObj.nextLine();
+        System.out.printf("Password: ");
+        password = myObj.nextLine();
+
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(url, userName, password);
@@ -34,8 +41,9 @@ public class Connect {
 
     public Connection getConn(){
         return conn;
-    }
+    } // returns connection
 
-    public static void main(String[] args) {
-    }
+    public String getUrl() {
+        return url;
+    } // Return the url used for the db connection
 }
