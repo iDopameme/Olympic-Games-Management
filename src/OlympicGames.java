@@ -1,16 +1,13 @@
+import Database.Connect;
+
 public class OlympicGames {
     public static void main(String[] args) {
+        // Class Instances
+        Countries country = new Countries();
 
-        Sports mySports = new Sports();
-        Participants players = new Participants();
+        //System.out.println(country.getCountryID("Belgium"));
 
-        mySports.setSports("Football");
-        mySports.setSports("Volleyball");
-        mySports.setSports("Tennis");
-        mySports.setSports("Athletics");
-        mySports.setSports("Swimming");
-
-
+        country.setAllValues();
 
     }
 }

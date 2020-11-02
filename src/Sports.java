@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 // List of sports available in the Olympics
-// Currently working out the concept of linking Sports with the rest of the java classes
 //////////////////////////////////////////////////////////////////////////////////////////
-
+import Database.Connect;
+import java.util.ArrayList;
 
 public class Sports extends Tournament {
     // Constants
@@ -11,6 +11,7 @@ public class Sports extends Tournament {
     protected int[] sportID;
     private String[] sports;
     private int idCount;
+    private ArrayList<String> sportsList; // ArrayList
 
     // Default Constructor -- Default Sports
     Sports(){
@@ -22,6 +23,7 @@ public class Sports extends Tournament {
         sports = new String[SPORTS_CAPACITY];
         sportID = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
         idCount = 0;
+        sportsList = new ArrayList<String>(); // ArrayList
     }
 
     //////////////////////////////////////
@@ -48,6 +50,7 @@ public class Sports extends Tournament {
         sports[idCount] = s;
         System.out.println(s + " is in array index " + idCount);
         idCount++;
+        sportsList.add(s); // ArrayList
     }
 
     public void outputAllSports(){
@@ -56,12 +59,21 @@ public class Sports extends Tournament {
         }
     }
 
+    public void outputArrayList(){
+        System.out.println(sportsList);
+    }
+
 
     public boolean linkPlayerSport(String s, String player){ // Links what sport every player participates in...
-        //if ()
-        //    return true;
-
-        return false;
+        boolean bool = false;
+        for(int i = 0; i < SPORTS_CAPACITY; i++)
+            if(s == sports[i]) {
+                //@TODO add the player to an arrayList of the sports
+                bool = true;
+            } else {
+                bool = false;
+            }
+        return bool;
     }
 
     //////////////////////////////////////
@@ -72,11 +84,6 @@ public class Sports extends Tournament {
     }
 
     public void headToHeadSport(){ // This class handles head to head sports which contains just 2 players
-
-    }
-
-    public static void main(String[] args) {
-
 
     }
 
