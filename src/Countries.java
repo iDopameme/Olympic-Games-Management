@@ -4,10 +4,6 @@ import java.util.Scanner;
 import Database.Connect;
 
 public class Countries {
-    private int[] countryID;
-    private String[] countryName;
-    private String[] countryAbbreviations;
-    private String[] participatingCountries;
     protected final static int TOTAL_COUNTRIES = 193;
     Connect database;
 
@@ -16,9 +12,6 @@ public class Countries {
     }
 
     public void init(){
-        countryID = new int[TOTAL_COUNTRIES];
-        countryName = new String[TOTAL_COUNTRIES];
-        countryAbbreviations = new String[TOTAL_COUNTRIES];
         database = new Connect();
     }
 
@@ -101,14 +94,14 @@ public class Countries {
             PreparedStatement pstmt = database.getConn().prepareStatement(query); // Prepared Statement in order to pass values through SQL statements
 
             Scanner sc = new Scanner(new File("C:\\Users\\Dopam\\IdeaProjects\\Olympic-Games-Management\\src\\csvFiles\\countries.csv")); // Opening csv file
-            sc.useDelimiter(",|\\n"); // Delimiter skips comma and new line
+            sc.useDelimiter("[,\\n]"); // Delimiter skips comma and new line
 
 
             //////////////////////////////////////
             // Variables required to read in from csv file to pass through the query
-            int countryID = 0;
-            String countryName = "";
-            String countryAbbrev = "";
+            int countryID;
+            String countryName;
+            String countryAbbrev;
             //////////////////////////////////////
 
             while (sc.hasNext()) {
@@ -131,19 +124,20 @@ public class Countries {
         }
 
         database.endConn();
-    } // WARNING! DO NOT RUN THIS FUNCTION IF ALL COUNTRIES ARE ALREADY POPULATED IN THE TABLE
+    } // This function will not run if data already exists in the table
 
-    public void setCountryID(int id, int index){
-        countryID[index] = id;
-    } // WIP
+    public void removeAllValues() {
+        try {
+            database.startConn();
+            Statement stmt = database.getConn().createStatement();
+            String sql = "DELETE FROM countries";
+            stmt.executeUpdate(sql);
+            System.out.println("Countries table is now deleted");
 
-    public void setCountryName(String name, int index){
-        countryName[index] = name;
-    } // WIP
-
-    public void setCountryAbbreviations(String n, int index){
-        countryAbbreviations[index] = n;
-    } // WIP
-
+        } catch(SQLException e) {
+            System.out.println("SQL exception occurred" + e);
+        }
+        database.endConn();
+    } //
 }
 
