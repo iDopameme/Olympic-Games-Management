@@ -5,7 +5,8 @@ import java.util.Scanner;
 
 public class Connect {
     private Connection conn = null;
-    private final String url = "jdbc:mysql://localhost/olympics";
+    private final String url = "jdbc:mysql://olympics.cs9ujvvnthok.us-east-2.rds.amazonaws.com:3306/?user=admin";
+
     Scanner myObj = new Scanner(System.in);
 
     public void startConn(){
