@@ -1,16 +1,15 @@
-//
-//	W.I.P
-
 import java.util.Arrays;
-import java.util.ArrayList;
-import Database.Connect;
+
+import OlymGamesLocal.Countries;
+import OlymGamesLocal.Participants;
+
 
 
 public class Participants extends Countries {
 
 	//const variables
-	private final int MAX_PARTICIPANTS = 3; // just for testing
-    private String[] header = {"ID", "FIRST NAME", "LAST NAME", "AGE"}; // ???
+	private final int MAX_PARTICIPANTS = 20;
+    private final String[] header = {"ID", "FIRST NAME", "LAST NAME", "AGE", "COUNTRY"};
 	
 	//variables
 	private int[] participantID;
@@ -31,27 +30,36 @@ public class Participants extends Countries {
     	lastName = new String[MAX_PARTICIPANTS];
     	age = new int[MAX_PARTICIPANTS];
 		participants = new String[MAX_PARTICIPANTS];
-		pCountry = new String[TOTAL_COUNTRIES];
+		pCountry = new String[TOTAL_COUNTRIES]; // 193 is temporary. Should be a final variable
 		count = 0;
     }
 
     public void listParticipants(){ //list in order
-		for (String s : header) {
-			System.out.printf("%-12s ", s);
+    	for (String s : header) {
+    		System.out.printf("%-12s ", s);
+    	}
+    	
+		for (int j = 0; j < MAX_PARTICIPANTS; j++) { //probably not efficient way to code this
+			if (participantID[j] != 0) {
+				System.out.printf("\n%-12s ",participantID[j]);
+				System.out.printf("%-12s ", firstName[j]);
+				System.out.printf("%-12s ",lastName[j]);
+				System.out.printf("%-12s ", age[j]);
+				System.out.printf("%-12s", pCountry[j]);
+			}
+			else {
+				j = MAX_PARTICIPANTS;
+			}
 		}
-		for (int j = 0; j < MAX_PARTICIPANTS; j++) {
-			System.out.printf("\n%-12s ",participantID[j]);
-			System.out.printf("%-12s ", firstName[j]);
-			System.out.printf("%-12s ",lastName[j]);
-			System.out.printf("%-12s ", age[j]);
-		}
+		
     }
 
-    public void addParticipants(String lastN, String firstN, int ageN){
+    public void addParticipants(String lastN, String firstN, int ageN, String countryN){
     	participantID[count] = count + 1;
     	firstName[count] = firstN;
     	lastName[count] = lastN; 
     	age[count] = ageN;
+    	pCountry[count] = countryN;
     	count++;  	
     }
     
@@ -59,6 +67,7 @@ public class Participants extends Countries {
 	public String[] getFirstName() {
 		return firstName;
 	}
+
 
 	public void setFirstName(String[] firstName) {
 		this.firstName = firstName;
@@ -90,12 +99,17 @@ public class Participants extends Countries {
 	//GETTERS AND SETTERS END
 	
 // testing
-//	public static void main(String[] args) {
-//		Participants obj = new Participants();
-//		obj.addParticipants("susan", "marry", 23);
-//		obj.addParticipants("doe", "john", 21);
-//		obj.addParticipants("rey", "adam", 11);
-//		obj.listParticipants();
-//	}
+	public static void main(String[] args) {
+		Participants obj = new Participants();
+		obj.addParticipants("Susan", "Marry", 23, "PH");
+		obj.addParticipants("Doe", "John", 21, "US");
+		obj.addParticipants("Rey", "Adam", 11, "CA");
+		obj.addParticipants("Boy", "Roy", 11, "JP");
+		obj.listParticipants();
+	}
 
 }
+
+// possible extra classes needed
+// team(), for when the sport requires teams
+// headToHead(), for when the sport only has 2 players
