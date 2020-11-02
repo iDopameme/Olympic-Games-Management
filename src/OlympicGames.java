@@ -7,7 +7,7 @@ public class OlympicGames {
 
         //System.out.println(country.getCountryID("Belgium"));
 
-        country.removeAllValues();
+        country.setAllValues();
 
     }
 }

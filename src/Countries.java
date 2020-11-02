@@ -70,7 +70,7 @@ public class Countries {
         try {
             database.startConn();
             Statement stmt = database.getConn().createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM countries");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM olympics.countries");
             System.out.println("ID     Name           Abbreviation");
 
             while (rs.next()) {
@@ -90,10 +90,10 @@ public class Countries {
     public void setAllValues() {
         try {
             database.startConn();
-            String query = "INSERT INTO countries" + "(ID, cName, cAbbrev) VALUES" + "(?, ?, ?);"; // SQL Query
+            String query = "INSERT INTO olympics.countries" + "(ID, cName, cAbbrev) VALUES" + "(?, ?, ?);"; // SQL Query
             PreparedStatement pstmt = database.getConn().prepareStatement(query); // Prepared Statement in order to pass values through SQL statements
 
-            Scanner sc = new Scanner(new File("C:\\Users\\Dopam\\IdeaProjects\\Olympic-Games-Management\\src\\csvFiles\\countries.csv")); // Opening csv file
+            Scanner sc = new Scanner(new File("C:\\Olympic-Games-Management\\src\\csvFiles\\countries.csv")); // Opening csv file
             sc.useDelimiter("[,\\n]"); // Delimiter skips comma and new line
 
 
@@ -130,7 +130,7 @@ public class Countries {
         try {
             database.startConn();
             Statement stmt = database.getConn().createStatement();
-            String sql = "DELETE FROM countries";
+            String sql = "DELETE FROM olympics.countries";
             stmt.executeUpdate(sql);
             System.out.println("Countries table is now deleted");
 
