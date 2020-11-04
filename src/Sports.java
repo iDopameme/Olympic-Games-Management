@@ -87,4 +87,7 @@ public class Sports extends Tournament {
 
     }
 
+    public static void main(String[] args) {
+
+    }
 }

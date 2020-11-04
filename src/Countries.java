@@ -120,7 +120,6 @@ public class Countries {
         catch (Exception ex)
         {
             System.out.println("ERROR: " + ex.getMessage());
-            database.endConn();
         }
 
         database.endConn();

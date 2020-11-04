@@ -43,4 +43,7 @@ public class Tournament {
     public void results(){
 
     }
+    public static void main(String[] args) {
+
+	}
 }
