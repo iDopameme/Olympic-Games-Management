@@ -19,6 +19,7 @@ public class OlympicGames {
     	sport.setSports("Volleyball");
     	sport.setSports("Swimming");
     	System.out.println("============");
+    	
     	//setting participants
     	players.addParticipants("Mary", "Jane", 23, "PH");
     	players.addParticipants("McRoy", "Roy", 23, "CH");
