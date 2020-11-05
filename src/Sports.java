@@ -6,9 +6,10 @@ import Database.Connect;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
-public class Sports extends Tournament {
+public class Sports{
     Connect database;
 
     // Constants
@@ -23,7 +24,6 @@ public class Sports extends Tournament {
     Sports(){
         init();
     }
-
 
     public void init(){
         sports = new String[SPORTS_CAPACITY];
@@ -53,52 +53,24 @@ public class Sports extends Tournament {
 
     //////////////////////////////////////
     // Mutator Functions
-    public void setSports(String s , String t){
+
+    public void outputAllSports(){
         try {
             database.startConn();
-            String sql = "INSERT INTO olympics.sports" + "(sName, sportType) VALUES" + "(?, ?);";
-            PreparedStatement pstmt = database.getConn().prepareStatement(sql);
+            Statement stmt = database.getConn().createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM olympics.sports");
+            System.out.println("ID     Sport     Type");
 
-            pstmt.setString(1, s);
-            pstmt.setString(2, t);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
+            while (rs.next()) {
+                int id = rs.getInt("sportID");
+                String name = rs.getString("sName");
+                String abbrev = rs.getString("sportType");
+                System.out.println(id + "     " + name + "     " + abbrev);
+            }
+        } catch(SQLException e) {
             System.out.println("SQL exception occurred" + e);
         }
         database.endConn();
-    } // FUNCTION NOT TESTED YET. FUNCTIONALITY NOT CERTAIN | 11/05 04:10 AM
-    
-    public boolean sportCheck (String s) {
-        boolean check = false;
-        String name = null;
-        try {
-            database.startConn();
-            String sql = "SELECT sName FROM olympics.sports WHERE sName = ?";
-            PreparedStatement pstmt = database.getConn().prepareStatement(sql);
-            
-            pstmt.setString(1, s);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                name = rs.getString("sName");
-            }
-
-            if (name == s) {
-                check = true;
-            }
-            
-        } catch (SQLException e) {
-            System.out.println("SQL exeception occurred" + e);
-        }
-        database.endConn();
-        return check;
-    } // FUNCTION NOT TESTED YET. FUNCTIONALITY NOT CERTAIN | 11/05 04:10 AM
-
-    public void outputAllSports(){
-        for(int i = 0; i < 10; i++) {
-            System.out.println("ID: " + i + " | SportName: " + sports[i]);
-        }
     }
 
     public void outputArrayList(){
