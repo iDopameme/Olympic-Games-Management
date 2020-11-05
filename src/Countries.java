@@ -42,8 +42,8 @@ public class Countries {
     } // Obtaining the ID of a country name you pass through
 
     public String getCountries(int i){
-        String name = "";
-        String ab = "";
+        String name = null;
+        String ab = null;
         try {
             database.startConn();
             String sql = "SELECT * FROM olympics.countries WHERE ID = ?";

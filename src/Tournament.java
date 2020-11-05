@@ -1,8 +1,26 @@
 import Database.Connect;
+
+import java.util.Scanner;
+
 public class Tournament {
 	//private members
 	private Team[] team;
 	private Time time;
+
+
+	Scanner input = new Scanner(System.in);
+	Sports sport = new Sports();
+
+	public void createTournament() {
+		System.out.println("****************************************************");
+		System.out.println("************* Creating Tournament Menu *************");
+		System.out.println("+++ What sport will be played in the tournament?");
+		System.out.print("Submit a sport: ");
+		String userInput = input.next();
+		if (sport.sportCheck(userInput) == false) {
+			System.out.println("+++ Not a valid sport");
+		}
+	} // Still a work in progress did not finish yet | 11/05 04:10 AM
 	
     public void tournamentDetails(String sport, String[] teams){ //for team sports
     	time = new Time();

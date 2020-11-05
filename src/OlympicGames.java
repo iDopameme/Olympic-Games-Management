@@ -10,8 +10,6 @@ public class OlympicGames {
 	private int menuChoice = 0;
 
 
-
-	
     public static void main(String[] args) {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Class Instances
@@ -26,7 +24,7 @@ public class OlympicGames {
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Local main variables
-        int userInput;
+
         
         while (games.getMenuActive() == true){
 
@@ -43,7 +41,7 @@ public class OlympicGames {
             System.out.println("****************************************************");
             System.out.println("****************************************************");
             System.out.print("Please select a command: ");
-            userInput = input.nextInt();
+            int userInput = input.nextInt();
 
             switch(userInput) {
                 case 1:
