@@ -15,8 +15,8 @@ public class OlympicGames {
         // Class Instances
         OlympicGames games = new OlympicGames();
         Countries country = new Countries();
-        Tournament game = new Tournament();
-        Sports sport = new Sports();
+//        Tournament game = new Tournament(); //Error w/ sports.java inside
+//        Sports sport = new Sports(); // causes error
         Participants players = new Participants();
         Scanner input = new Scanner(System.in);
         MedalsWon medal = new MedalsWon();
@@ -45,14 +45,14 @@ public class OlympicGames {
 
             switch(userInput) {
                 case 1:
-                    game.main(new String[0]);
+//                    game.main(new String[0]);
                     break;
                 case 2:
-                    sport.main(new String[2]);
+//                    sport.main(new String[2]);
                     break;
                 case 3:
 
-
+                	break;
                 case 4:
                     country.outputTable();
                     break;
