@@ -2,15 +2,18 @@
 // List of sports available in the Olympics
 //////////////////////////////////////////////////////////////////////////////////////////
 import Database.Connect;
+import com.mysql.cj.protocol.Resultset;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Sports{
     Connect database;
+    Scanner input = new Scanner(System.in);
 
     // Constants
     private final static int SPORTS_CAPACITY = 10;
@@ -19,6 +22,8 @@ public class Sports{
     private String[] sports;
     private int idCount;
     private ArrayList<String> sportsList; // ArrayList
+
+
 
     // Default Constructor -- Default Sports
     Sports(){
@@ -50,10 +55,6 @@ public class Sports{
         return sports[id];
     }
 
-
-    //////////////////////////////////////
-    // Mutator Functions
-
     public void outputAllSports(){
         try {
             database.startConn();
@@ -63,15 +64,34 @@ public class Sports{
 
             while (rs.next()) {
                 int id = rs.getInt("sportID");
-                String name = rs.getString("sName");
-                String abbrev = rs.getString("sportType");
-                System.out.println(id + "     " + name + "     " + abbrev);
+                String sport = rs.getString("sName");
+                String type = rs.getString("sportType");
+                System.out.println(id + "     " + sport + "     " + type);
             }
         } catch(SQLException e) {
             System.out.println("SQL exception occurred" + e);
         }
         database.endConn();
     }
+
+    public String selectSport(int pick) {
+        String name = null;
+        try {
+            database.startConn();
+            String sql = "SELECT sName FROM olympics.sports WHERE ID = ?";
+            PreparedStatement pstmt = database.getConn().prepareStatement(sql);
+            pstmt.setInt(1, pick);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                name = rs.getString("sName");
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL exception occurred" + e);
+        }
+        return name;
+    }
+
 
     public void outputArrayList(){
         System.out.println(sportsList);

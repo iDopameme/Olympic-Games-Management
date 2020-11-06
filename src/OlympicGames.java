@@ -19,11 +19,9 @@ public class OlympicGames {
         Participants players = new Participants();
         Scanner input = new Scanner(System.in);
         MedalsWon medal = new MedalsWon();
-        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        // Local main variables
 
+        games.printMenu();
         
         while (games.getMenuActive() == true){
 
@@ -34,13 +32,13 @@ public class OlympicGames {
 
             switch(userInput) {
                 case 1:
-                      game.createTournament();
+                    game.createTournament();
                     break;
                 case 2:
-  //                    sport.main(new String[2]);
+                    //@TODO Fix Sports instance error
                     break;
                 case 3:
-
+                    //@TODO Complete tournament functions and games database
                 	break;
                 case 4:
                     country.outputTable();
@@ -85,6 +83,7 @@ public class OlympicGames {
         System.out.println("+++ 5. View/Edit list of participants"); // 80% completed
         System.out.println("+++ 6. View all countries"); // 95% completed
         System.out.println("+++ 7. View medal leaderboard"); // work in progress
+        System.out.println("+++ 8. View tournament results"); // work in progress
         System.out.println("+++ 9. Print Main Menu again");
         System.out.println("+++ 0. Quit Olympic Game Management"); // Completed
         System.out.println("****************************************************");
@@ -92,10 +91,10 @@ public class OlympicGames {
     }
 
     public boolean getMenuActive(){
-        return menuActive;
+        return this.menuActive;
     }
 
     public void setMenuActive(boolean b) {
-        menuActive = b;
+        this.menuActive = b;
     }
 }
