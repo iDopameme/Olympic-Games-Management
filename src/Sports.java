@@ -78,7 +78,7 @@ public class Sports{
         String name = null;
         try {
             database.startConn();
-            String sql = "SELECT sName FROM olympics.sports WHERE ID = ?";
+            String sql = "SELECT sName FROM olympics.sports WHERE sportID = ?";
             PreparedStatement pstmt = database.getConn().prepareStatement(sql);
             pstmt.setInt(1, pick);
             ResultSet rs = pstmt.executeQuery();
@@ -89,6 +89,7 @@ public class Sports{
         } catch (SQLException e) {
             System.out.println("SQL exception occurred" + e);
         }
+        database.endConn();
         return name;
     }
 

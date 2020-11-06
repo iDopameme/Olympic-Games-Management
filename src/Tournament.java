@@ -15,8 +15,10 @@ public class Tournament {
 		System.out.println("****************************************************");
 		System.out.println("************* Creating Tournament Menu *************");
 		System.out.println("+++ What sport will be played in the tournament?");
+		sport.outputAllSports();
 		int c = input.nextInt();
 		String userInput = sport.selectSport(c);
+		System.out.println(userInput);
 
 
 
