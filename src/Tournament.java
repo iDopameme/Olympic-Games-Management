@@ -3,24 +3,31 @@ import java.util.Scanner;
 
 public class Tournament {
 	//constants
-	private final int MAX_TEAMS = 2; //test value
+	private final int MAX_TEAMS = 2;
 	
 	//private members
-	private Team[] team;
-	private Time time;
+	String userInput;
+	String type;
 	
-	//instances
-	Countries country;
-	Scanner input = new Scanner(System.in);
-	Sports sport = new Sports();
+	//private instances
+	private Sports sport;
+	private Tournament game;
+	private String[] countries;
+	private Countries country;
+	private Time time;
+	private Team[] team;
 
 	public void createTournament() {
 		//new instances
-		Tournament game = new Tournament();
-		String[] countries = new String[MAX_TEAMS];
+		userInput = new String();
+		sport = new Sports();
+		game = new Tournament();
+		countries = new String[MAX_TEAMS];
 		country = new Countries();
 		time = new Time();
 		team = new Team[MAX_TEAMS];
+		
+		Scanner input = new Scanner(System.in);
 		
 		//menu start
 		System.out.println("****************************************************");
@@ -30,8 +37,8 @@ public class Tournament {
 		sport.outputAllSports();
 		System.out.println("+++ What sport will be played in the tournament?");
 		int c = input.nextInt();
-		String userInput = sport.selectSport(c);
-		String type = sport.getSportType(c);
+		userInput = sport.selectSport(c);
+		type = sport.getSportType(c);
 		System.out.println(userInput + " " + type);
 		
 		//setting time
@@ -58,13 +65,9 @@ public class Tournament {
 			
 			//end creating tournament
 			System.out.println("TOURNAMENT SUCCESSFULLY CREATED!");
-			
-			//outputting the tournament
-			game.tournamentDetails(userInput, team, time);
 		}
 		else {
 			System.out.println("+++ Who is participating?");
-			
 			//end creating tournament
 			System.out.println("TOURNAMENT SUCCESSFULLY CREATED!");
 		}
@@ -72,11 +75,11 @@ public class Tournament {
 
 	} // Still a work in progress did not finish yet | 11/08 11:40AM
 	
-    public void tournamentDetails(String sport, Team[] teams, Time time){ //for team sports
+    public void tournamentDetails(){ //for team sports
     	System.out.println("\n==============");
-    	System.out.println(sport.toUpperCase() + "\nTOURNAMENT DETAILS");
+    	System.out.println(userInput.toUpperCase() + "\nTOURNAMENT DETAILS");
     	System.out.println("==============");
-    	for (Team t : teams) {
+    	for (Team t : team) {
     		t.teamList();
     	}
     	System.out.println(); 
@@ -84,7 +87,7 @@ public class Tournament {
     	System.out.println();    	
     }
     
-    public void tournamentDetails(String sport, Participants players) { //for head to head sports (WIP)
+    public void tournamentDetails(String sport, Participants players) { //for head to head sports
     	System.out.println("\n==============");
     	System.out.println(sport.toUpperCase() + "\nTOURNAMENT DETAILS");
     	System.out.println("==============");

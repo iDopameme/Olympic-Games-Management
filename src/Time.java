@@ -38,7 +38,7 @@ public class Time {
 		System.out.println("================");
 		System.out.println("Please print out the month and date the tournament will start:");
 		
-			System.out.println("Month:");
+			System.out.print("Month:");
 			int monthInput = input.nextInt();
 			if(monthInput > calendar.getActualMaximum(Calendar.MONTH)) {
 				this.month = monthInput - 1;
@@ -48,17 +48,17 @@ public class Time {
 				year = calendar.get(Calendar.YEAR) + 1;
 			}
 		
-		System.out.println("Day:");
+		System.out.print("Day:");
 		int dayInput = input.nextInt();
 		this.day = dayInput;
 		System.out.println("================");
 		while(canSet == false) {
 			System.out.println("START TIME");
-			System.out.println("Enter an hour:");
+			System.out.print("Enter an hour:");
 			int hourInput = input.nextInt();
 			this.hour = hourInput;
 			
-			System.out.println("Enter minutes:");
+			System.out.print("Enter minutes:");
 			int minuteInput = input.nextInt();
 			this.minutes = minuteInput;
 
@@ -83,11 +83,11 @@ public class Time {
 		
 		while(canSet == false) {
 			System.out.println("END TIME");
-			System.out.println("Enter an hour:");
+			System.out.print("Enter an hour:");
 			int hourInput = input.nextInt();
 			hour = hourInput;
-			
-			System.out.println("Enter minutes:");
+	
+			System.out.print("Enter minutes:");
 			int minuteInput = input.nextInt();
 			minute = minuteInput;
 			

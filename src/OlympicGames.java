@@ -3,9 +3,12 @@ import java.beans.XMLEncoder;
 import java.util.Scanner;
 
 public class OlympicGames {
+	private final int MAX_TOURNAMENTS = 10;
+	
     // Private variables
     private boolean menuActive = true;
     private int menuChoice = 0;
+    private static int count = 0;
 
 
     public static void main(String[] args) {
@@ -13,7 +16,7 @@ public class OlympicGames {
         // Class Instances
         OlympicGames games = new OlympicGames();
         Countries country = new Countries();
-        Tournament game = new Tournament();
+        Tournament[] game = new Tournament[games.getMAX_TOURNAMENTS()];
         Participants players = new Participants();
         Scanner input = new Scanner(System.in);
         MedalsWon medal = new MedalsWon();
@@ -21,8 +24,7 @@ public class OlympicGames {
         Connect database = new Connect();
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        database.startConn();
-
+//        database.startConn();
         while (games.getMenuActive() == true) {
             games.printMenu();
             System.out.print("Please select a command: ");
@@ -30,13 +32,27 @@ public class OlympicGames {
             System.out.println();
             switch (userInput) {
                 case 1:
-                    game.createTournament();
+                	if(count != games.getMAX_TOURNAMENTS()) {
+                		game[count] = new Tournament();
+                        game[count].createTournament();
+                        game[count].tournamentDetails();
+                        count++;
+                	}
+                	else {
+                		System.out.println("Cannot create anymore tournaments.");
+                	}
                     break;
                 case 2:
                     //@TODO Fix Sports instance error
                     break;
                 case 3:
                     //@TODO Complete tournament functions and games database
+                	for(Tournament g : game) {
+                		if(g != null) {
+                    		g.tournamentDetails();
+                		}
+                	}
+                	System.out.println("Which tournament do you want to delete?"); //WIP
                     break;
                 case 4:
                     sport.outputAllSports();
@@ -86,5 +102,9 @@ public class OlympicGames {
     public void setMenuActive(boolean b) {
         this.menuActive = b;
     }
+
+	public int getMAX_TOURNAMENTS() {
+		return MAX_TOURNAMENTS;
+	}
 
 }
