@@ -92,8 +92,27 @@ public class Sports{
         database.endConn();
         return name;
     }
+    
+    public String getSportType(int pick) {
+        String type = null;
+        try {
+            database.startConn();
+            String sql = "SELECT sportType FROM olympics.sports WHERE sportID = ?";
+            PreparedStatement pstmt = database.getConn().prepareStatement(sql);
+            pstmt.setInt(1, pick);
+            ResultSet rs = pstmt.executeQuery();
 
-
+            while (rs.next()) {
+                type = rs.getString("sportType");
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL exception occurred" + e);
+        }
+        database.endConn();
+		return type;
+    	
+    }
+    
     public void outputArrayList(){
         System.out.println(sportsList);
     }

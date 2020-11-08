@@ -1,57 +1,95 @@
 import Database.Connect;
-
 import java.util.Scanner;
 
 public class Tournament {
+	//constants
+	private final int MAX_TEAMS = 2; //test value
+	
 	//private members
 	private Team[] team;
 	private Time time;
-
-
+	
+	//instances
+	Countries country;
 	Scanner input = new Scanner(System.in);
 	Sports sport = new Sports();
 
 	public void createTournament() {
+		//new instances
+		Tournament game = new Tournament();
+		String[] countries = new String[MAX_TEAMS];
+		country = new Countries();
+		time = new Time();
+		team = new Team[MAX_TEAMS];
+		
+		//menu start
 		System.out.println("****************************************************");
 		System.out.println("************* Creating Tournament Menu *************");
-		System.out.println("+++ What sport will be played in the tournament?");
+		
+		//setting sports
 		sport.outputAllSports();
+		System.out.println("+++ What sport will be played in the tournament?");
 		int c = input.nextInt();
 		String userInput = sport.selectSport(c);
-		System.out.println(userInput);
+		String type = sport.getSportType(c);
+		System.out.println(userInput + " " + type);
+		
+		//setting time
+		time.startTime();
+		time.endTime();
+		
+		//setting participants based on sport type (WIP)
+		if(type.equals("Team")) {
+			System.out.println("+++ What countries are participating? Type at most 2 countries");
+			for(int i = 0; i < MAX_TEAMS; i++) {
+				String participatingCountry = new String();
+				participatingCountry = input.next();
+				int userInput1 = country.getCountryID(participatingCountry);
+				countries[i] = country.getCountries(userInput1);
+			}
+			
+			//setting teams
+			for(int i = 0; i < MAX_TEAMS; i++) {
+				String temp = countries[i];
+				team[i] = new Team(temp);
+				team[i].newTeam(temp, team[i]);
+				team[i].teamList();
+			}
+			
+			//end creating tournament
+			System.out.println("TOURNAMENT SUCCESSFULLY CREATED!");
+			
+			//outputting the tournament
+			game.tournamentDetails(userInput, team, time);
+		}
+		else {
+			System.out.println("+++ Who is participating?");
+			
+			//end creating tournament
+			System.out.println("TOURNAMENT SUCCESSFULLY CREATED!");
+		}
 
 
-
-	} // Still a work in progress did not finish yet | 11/05 04:10 AM
+	} // Still a work in progress did not finish yet | 11/08 11:40AM
 	
-    public void tournamentDetails(String sport, String[] teams){ //for team sports
-    	time = new Time();
+    public void tournamentDetails(String sport, Team[] teams, Time time){ //for team sports
     	System.out.println("\n==============");
     	System.out.println(sport.toUpperCase() + "\nTOURNAMENT DETAILS");
     	System.out.println("==============");
-    	team = new Team[teams.length];
-		for (int i = 0; i<teams.length; i++) {
-			team[i] = new Team(teams[i]);
-		}
-    	for(int i = 0; i<2; i++) {
-    		team[i].newTeam(team[i].getTeamName(), team[i]);
-    		team[i].teamList();
+    	for (Team t : teams) {
+    		t.teamList();
     	}
     	System.out.println(); 
-    	time.startTime(5, 30);
-    	time.endTime(6, 30);
     	System.out.println(time);
     	System.out.println();    	
     }
     
-    public void tournamentDetails(String sport, Participants players) { //for head to head sports
+    public void tournamentDetails(String sport, Participants players) { //for head to head sports (WIP)
     	System.out.println("\n==============");
     	System.out.println(sport.toUpperCase() + "\nTOURNAMENT DETAILS");
     	System.out.println("==============");
     	players.listParticipants();
     	System.out.println(); 
-    	time.startTime(5, 30);
-    	time.endTime(6, 30);
     	System.out.println(time);
     	System.out.println(); 
     }

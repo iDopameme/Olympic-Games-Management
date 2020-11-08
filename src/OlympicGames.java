@@ -4,8 +4,6 @@ import java.util.Scanner;
 
 public class OlympicGames {
     // Private variables
-    private static String[] teams = {"USA", "JAPAN"};
-    private static String[] teams2 = {"ITALY", "KOREA"};
     private boolean menuActive = true;
     private int menuChoice = 0;
 
@@ -15,7 +13,7 @@ public class OlympicGames {
         // Class Instances
         OlympicGames games = new OlympicGames();
         Countries country = new Countries();
-        Tournament game = new Tournament(); //Error w/ sports.java inside
+        Tournament game = new Tournament();
         Participants players = new Participants();
         Scanner input = new Scanner(System.in);
         MedalsWon medal = new MedalsWon();
@@ -24,12 +22,12 @@ public class OlympicGames {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         database.startConn();
-        games.printMenu();
 
         while (games.getMenuActive() == true) {
+            games.printMenu();
             System.out.print("Please select a command: ");
             int userInput = input.nextInt();
-
+            System.out.println();
             switch (userInput) {
                 case 1:
                     game.createTournament();
@@ -90,22 +88,3 @@ public class OlympicGames {
     }
 
 }
-        //country testing
-        // System.out.println(country.getCountryID("UNITED STATES OF AMERICA"));
-        
-        //setting sports
-//    	sport.setSports("Volleyball");
-//    	sport.setSports("Swimming");
-//    	System.out.println("============");
-//    	//setting participants
-//    	players.addParticipants("Mary", "Jane", 23, "PH");
-//    	players.addParticipants("McRoy", "Roy", 23, "CH");
-//
-//    	//this is details teams
-//        game.tournamentDetails(sport.getSportName(0), teams);
-//
-//    	//this is details head to head sports
-//    	game.tournamentDetails(sport.getSportName(1), players);
-//
-//        players.listParticipants();
-
