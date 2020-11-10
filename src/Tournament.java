@@ -6,20 +6,20 @@ public class Tournament {
 	private final int MAX_TEAMS = 2;
 	
 	//private members
-	String userInput;
-	String type;
+	private String userSport;
+	private String type;
 	
-	//private instances
-	private Sports sport;
-	private Tournament game;
-	private String[] countries;
-	private Countries country;
-	private Time time;
-	private Team[] team;
+	//instances
+	Sports sport;
+	Tournament game;
+	String[] countries;
+	Countries country;
+	Time time;
+	Team[] team;
 
 	public void createTournament() {
 		//new instances
-		userInput = new String();
+		userSport = new String();
 		sport = new Sports();
 		game = new Tournament();
 		countries = new String[MAX_TEAMS];
@@ -37,9 +37,9 @@ public class Tournament {
 		sport.outputAllSports();
 		System.out.println("+++ What sport will be played in the tournament?");
 		int c = input.nextInt();
-		userInput = sport.selectSport(c);
+		userSport = sport.selectSport(c);
 		type = sport.getSportType(c);
-		System.out.println(userInput + " " + type);
+		System.out.println(userSport + " " + type);
 		
 		//setting time
 		time.startTime();
@@ -60,24 +60,45 @@ public class Tournament {
 				String temp = countries[i];
 				team[i] = new Team(temp);
 				team[i].newTeam(temp, team[i]);
-				team[i].teamList();
 			}
 			
 			//end creating tournament
-			System.out.println("TOURNAMENT SUCCESSFULLY CREATED!");
+			System.out.println("+++ TOURNAMENT SUCCESSFULLY CREATED! +++");
 		}
 		else {
 			System.out.println("+++ Who is participating?");
 			//end creating tournament
-			System.out.println("TOURNAMENT SUCCESSFULLY CREATED!");
+			System.out.println("+++ TOURNAMENT SUCCESSFULLY CREATED! +++");
 		}
 
 
-	} // Still a work in progress did not finish yet | 11/08 11:40AM
+	} // Still a work in progress did not finish yet | 11/10 1:55AM
+	
+	public void modifyTournament() {
+		Scanner input = new Scanner(System.in);
+		System.out.println("What do you want to modify?");
+		System.out.println("+++ 1. Date and time");
+		int userInput3 = input.nextInt();
+		switch(userInput3) {
+		case 1:
+			time.startTime();
+			time.endTime();
+			System.out.println();
+			System.out.println("==========================");
+			System.out.println("UPDATED TOURNAMENT DETAILS");
+			System.out.println("==========================");
+			break;
+		}
+	}
+
+	
+	public void deleteTournament() {
+		
+	}
 	
     public void tournamentDetails(){ //for team sports
     	System.out.println("\n==============");
-    	System.out.println(userInput.toUpperCase() + "\nTOURNAMENT DETAILS");
+    	System.out.println(userSport.toUpperCase() + "\nTOURNAMENT DETAILS");
     	System.out.println("==============");
     	for (Team t : team) {
     		t.teamList();
@@ -89,7 +110,7 @@ public class Tournament {
     
     public void tournamentDetails(String sport, Participants players) { //for head to head sports
     	System.out.println("\n==============");
-    	System.out.println(sport.toUpperCase() + "\nTOURNAMENT DETAILS");
+    	System.out.println(userSport.toUpperCase() + "\nTOURNAMENT DETAILS");
     	System.out.println("==============");
     	players.listParticipants();
     	System.out.println(); 
@@ -104,7 +125,18 @@ public class Tournament {
     public void results(){
 
     }
-    public static void main(String[] args) {
 
+	public String getUserSport() {
+		return userSport.toUpperCase();
 	}
+
+	public Time getTime() {
+		return time;
+	}
+
+	public void setTime(Time time) {
+		this.time = time;
+	}    
+	
+    
 }

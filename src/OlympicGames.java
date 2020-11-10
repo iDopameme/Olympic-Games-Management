@@ -1,5 +1,7 @@
 import Database.Connect;
 import java.beans.XMLEncoder;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class OlympicGames {
@@ -7,6 +9,7 @@ public class OlympicGames {
 	
     // Private variables
     private boolean menuActive = true;
+    private boolean deleteActive = true;
     private int menuChoice = 0;
     private static int count = 0;
 
@@ -25,9 +28,9 @@ public class OlympicGames {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 //        database.startConn();
+        games.printMenu();
         while (games.getMenuActive() == true) {
-            games.printMenu();
-            System.out.print("Please select a command: ");
+            System.out.print("Please select a menu command: ");
             int userInput = input.nextInt();
             System.out.println();
             switch (userInput) {
@@ -43,16 +46,25 @@ public class OlympicGames {
                 	}
                     break;
                 case 2:
-                    //@TODO Fix Sports instance error
+                		games.displayTournaments(game);
+                    	System.out.println("Which tournament do you want to modify?");
+                    	String userInput2 = input.next();
+                    	for(int i = 0; i < games.getMAX_TOURNAMENTS(); i++) {
+                    		if(game[i] != null && game[i].getUserSport().equals(userInput2.toUpperCase())) {
+                        			game[i].modifyTournament();
+                        			game[i].tournamentDetails();
+                    			}
+                    		}
                     break;
                 case 3:
                     //@TODO Complete tournament functions and games database
-                	for(Tournament g : game) {
-                		if(g != null) {
-                    		g.tournamentDetails();
-                		}
+                	//ALSO WORK IN PROGRESS
+            		games.displayTournaments(game);
+                	while(games.isDeleteActive() == true) {
+                    	System.out.println("Which tournament do you want to delete? \n Type 999 to cancel."); //WIP
+                    	int userInput4 = input.nextInt();
+                    	games.setDeleteActive(false); //temp code just coz it's not done
                 	}
-                	System.out.println("Which tournament do you want to delete?"); //WIP
                     break;
                 case 4:
                     sport.outputAllSports();
@@ -78,13 +90,13 @@ public class OlympicGames {
         }
     }
 
-    public void printMenu() {
+	public void printMenu() {
         System.out.println("****************************************************");
         System.out.println("************* Olympic Game Management **************");
-        System.out.println("+++ 1. Create Tournament"); // work in progress
-        System.out.println("+++ 2. Modify Tournament"); // work in progress
-        System.out.println("+++ 3. Delete Tournament"); // work in progress
-        System.out.println("+++ 4. View list of sports"); //
+        System.out.println("+++ 1. Create Tournament"); // 60% Completed
+        System.out.println("+++ 2. Modify Tournament"); // 40% Completed
+        System.out.println("+++ 3. Delete Tournament"); // 10% Completed
+        System.out.println("+++ 4. View list of sports"); // Completed
         System.out.println("+++ 5. View/Edit list of participants"); // 80% completed
         System.out.println("+++ 6. View all countries"); // 95% completed
         System.out.println("+++ 7. View medal leaderboard"); // work in progress
@@ -94,7 +106,21 @@ public class OlympicGames {
         System.out.println("****************************************************");
         System.out.println("****************************************************");
     }
+	
+	public void displayTournaments(Tournament[] game) {
+		if(game == null) {
+			System.out.println("There are no tournaments currently...");
+		}
+		else {
+			for(Tournament g : game) { 
+	    		if(g != null) {
+	    			g.tournamentDetails();
+	    			}
+    		}
+		}
 
+	}
+	
     public boolean getMenuActive() {
         return this.menuActive;
     }
@@ -105,6 +131,14 @@ public class OlympicGames {
 
 	public int getMAX_TOURNAMENTS() {
 		return MAX_TOURNAMENTS;
+	}
+	
+    public boolean isDeleteActive() {
+		return deleteActive;
+	}
+
+	public void setDeleteActive(boolean deleteActive) {
+		this.deleteActive = deleteActive;
 	}
 
 }
