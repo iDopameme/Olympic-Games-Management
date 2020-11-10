@@ -1,9 +1,11 @@
 import Database.Connect;
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Tournament {
 	//constants
-	private final int MAX_TEAMS = 2;
+	private final int MAX_TEAMS = 3;
 	
 	//private members
 	private String userSport;
@@ -26,6 +28,7 @@ public class Tournament {
 		country = new Countries();
 		time = new Time();
 		team = new Team[MAX_TEAMS];
+
 		
 		Scanner input = new Scanner(System.in);
 		
@@ -47,7 +50,7 @@ public class Tournament {
 		
 		//setting participants based on sport type (WIP)
 		if(type.equals("Team")) {
-			System.out.println("+++ What countries are participating? Type at most 2 countries");
+			System.out.println("+++ What countries are participating?");
 			for(int i = 0; i < MAX_TEAMS; i++) {
 				String participatingCountry = new String();
 				participatingCountry = input.next();
@@ -78,15 +81,28 @@ public class Tournament {
 		Scanner input = new Scanner(System.in);
 		System.out.println("What do you want to modify?");
 		System.out.println("+++ 1. Date and time");
+		System.out.println("+++ 2. Delete Teams or Participants");
 		int userInput3 = input.nextInt();
 		switch(userInput3) {
 		case 1:
 			time.startTime();
 			time.endTime();
-			System.out.println();
-			System.out.println("==========================");
-			System.out.println("UPDATED TOURNAMENT DETAILS");
-			System.out.println("==========================");
+			game.updatedTournament();
+			break;
+		case 2:
+			if(type.equals("Team")) {
+				System.out.println("Which team do you want to delete?");	
+				String userInput = input.next();
+            	for(int i = 0; i < game.MAX_TEAMS; i++) {
+    				if(userInput.toUpperCase().equals(team[i].getTeamName().toUpperCase())) {
+    					team[i]=null;
+    				}
+            	}
+			}
+			else {
+				System.out.println("Which particiapant do you want to delete?");
+			}
+			game.updatedTournament();
 			break;
 		}
 	}
@@ -101,7 +117,9 @@ public class Tournament {
     	System.out.println(userSport.toUpperCase() + "\nTOURNAMENT DETAILS");
     	System.out.println("==============");
     	for (Team t : team) {
-    		t.teamList();
+    		if(t != null) {
+    			t.teamList();
+    		}
     	}
     	System.out.println(); 
     	System.out.println(time);
@@ -118,12 +136,19 @@ public class Tournament {
     	System.out.println(); 
     }
     
+    public void updatedTournament() {
+		System.out.println();
+		System.out.println("==========================");
+		System.out.println("UPDATED TOURNAMENT DETAILS");
+		System.out.println("==========================");
+    }
+    
     public void playTournament(){
 
     }
     
     public void results(){
-
+    	
     }
 
 	public String getUserSport() {

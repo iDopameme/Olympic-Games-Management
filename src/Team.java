@@ -1,5 +1,8 @@
 //each new team will be its own instance
 
+import Local.Participants;
+import Local.Team;
+
 public class Team extends Participants{
 	//private members
 	private String teamName;
@@ -33,15 +36,11 @@ public class Team extends Participants{
 	
 	public void teamList() { //list all the players in the team
 		System.out.println("\n" + (teamID) + " TEAM " + teamName);
-		players.listParticipants();
+//		players.listParticipants();
 	}
 	
-	public void listAllTeams() { //just an idea
-		
-	}
-
 	public String getTeamName() {
-		return teamName;
+		return teamName.toUpperCase();
 	}
 
 	

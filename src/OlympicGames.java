@@ -35,14 +35,13 @@ public class OlympicGames {
             System.out.println();
             switch (userInput) {
                 case 1:
-                	if(count != games.getMAX_TOURNAMENTS()) {
-                		game[count] = new Tournament();
-                        game[count].createTournament();
-                        game[count].tournamentDetails();
-                        count++;
-                	}
-                	else {
-                		System.out.println("Cannot create anymore tournaments.");
+                	for(int i = 0; i< games.getMAX_TOURNAMENTS(); i++) {
+                		if(game[i] == null) {
+                    		game[i] = new Tournament();
+                            game[i].createTournament();
+                            game[i].tournamentDetails();
+                            i = 10;
+                		}
                 	}
                     break;
                 case 2:
@@ -61,10 +60,32 @@ public class OlympicGames {
                 	//ALSO WORK IN PROGRESS
             		games.displayTournaments(game);
                 	while(games.isDeleteActive() == true) {
-                    	System.out.println("Which tournament do you want to delete? \n Type 999 to cancel."); //WIP
-                    	int userInput4 = input.nextInt();
-                    	games.setDeleteActive(false); //temp code just coz it's not done
+                    	System.out.println("Which tournament do you want to delete? \n Type 999 to go back to the menu."); //WIP
+                    	String userInput4 = input.next();
+                    	switch(userInput4.toUpperCase()) {
+                    	case "FOOTBALL":
+                    	case "VOLLEYBALL":
+                    	case "TENNIS":
+                    	case "BASKETBALL":
+                    	case "FENCING":
+                    	case "GOLF":
+                    	case "BOXING":
+                    	case "SWIMMING":
+                    	case "BASEBALL":
+                    	case "HANDBALL":
+                    		for(int i = 0; i < games.getMAX_TOURNAMENTS(); i++) {
+	                    		if(game[i] != null && game[i].getUserSport().equals(userInput4.toUpperCase())) {
+	                    			game[i] = null;
+	                    			}
+                    		}
+                		games.displayTournaments(game);
+                    		break;
+                    	case "999":            
+                    		games.setDeleteActive(false); //temp code just coz it's not done
+                    		break;	
+                    	}
                 	}
+                	games.setDeleteActive(true);
                     break;
                 case 4:
                     sport.outputAllSports();
