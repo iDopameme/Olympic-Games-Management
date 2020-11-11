@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Scanner;
 
 public class OlympicGames {
-	private final int MAX_TOURNAMENTS = 10;
+	private final int MAX_TOURNAMENTS = 2;
 	
     // Private variables
     private boolean menuActive = true;
     private boolean deleteActive = true;
+    private boolean tournamentIsNull = false;
     private int menuChoice = 0;
-    private static int count = 0;
 
 
     public static void main(String[] args) {
@@ -35,14 +35,19 @@ public class OlympicGames {
             System.out.println();
             switch (userInput) {
                 case 1:
+    				games.setTournamentIsNull(false);
                 	for(int i = 0; i< games.getMAX_TOURNAMENTS(); i++) {
                 		if(game[i] == null) {
-                    		game[i] = new Tournament();
-                            game[i].createTournament();
-                            game[i].tournamentDetails();
-                            i = 10;
+                				games.setTournamentIsNull(true);
+                				game[i] = new Tournament();
+                                game[i].createTournament();
+                                game[i].tournamentDetails();
+                                i = 10;
+                			}
                 		}
-                	}
+            		if(games.isTournamentIsNull() == false) {
+            			System.out.println("Cannot create anymore tournaments");
+            		}
                     break;
                 case 2:
                 		games.displayTournaments(game);
@@ -160,6 +165,14 @@ public class OlympicGames {
 
 	public void setDeleteActive(boolean deleteActive) {
 		this.deleteActive = deleteActive;
+	}
+
+	public boolean isTournamentIsNull() {
+		return tournamentIsNull;
+	}
+
+	public void setTournamentIsNull(boolean tournamentIsNull) {
+		this.tournamentIsNull = tournamentIsNull;
 	}
 
 }
