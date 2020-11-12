@@ -2,17 +2,12 @@ import Database.Connect;
 import java.beans.XMLEncoder;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class OlympicGames {
-	private final int MAX_TOURNAMENTS = 2;
-	
     // Private variables
     private boolean menuActive = true;
-    private boolean deleteActive = true;
-    private boolean tournamentIsNull = false;
     private int menuChoice = 0;
 
 
@@ -21,7 +16,8 @@ public class OlympicGames {
         // Class Instances
         OlympicGames games = new OlympicGames();
         Countries country = new Countries();
-        Tournament[] game = new Tournament[games.getMAX_TOURNAMENTS()];
+        Tournament tournaments;
+        ArrayList<Tournament> game = new ArrayList<>();
         Participants players = new Participants();
         Scanner input = new Scanner(System.in);
         MedalsWon medal = new MedalsWon();
@@ -29,7 +25,7 @@ public class OlympicGames {
         Connect database = new Connect();
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-//        database.startConn();
+        //database.startConn();
         games.printMenu();
         while (games.getMenuActive() == true) {
             System.out.print("Please select a menu command: ");
@@ -37,63 +33,30 @@ public class OlympicGames {
             System.out.println();
             switch (userInput) {
                 case 1:
-    				games.setTournamentIsNull(false);
-                	for(int i = 0; i< games.getMAX_TOURNAMENTS(); i++) {
-                		if(game[i] == null) {
-                				games.setTournamentIsNull(true);
-                				game[i] = new Tournament();
-                                game[i].createTournament();
-                                game[i].tournamentDetails();
-                                i = 10;
-                			}
-                		}
-            		if(games.isTournamentIsNull() == false) {
-            			System.out.println("Cannot create anymore tournaments");
-            		}
+                	tournaments = new Tournament();
+                	tournaments.createTournament();
+                	game.add(tournaments);
+                	games.displayTournaments(game);
                     break;
                 case 2:
                 		games.displayTournaments(game);
-                    	System.out.println("Which tournament do you want to modify?");
-                    	String userInput2 = input.next();
-                    	for(int i = 0; i < games.getMAX_TOURNAMENTS(); i++) {
-                    		if(game[i] != null && game[i].getUserSport().equals(userInput2.toUpperCase())) {
-                        			game[i].modifyTournament();
-                        			game[i].tournamentDetails();
-                    			}
+                    	System.out.println("Which tournament do you want to modify? (Type the sport)");
+                    	String userInput2 = input.next().toUpperCase();
+                    	for(Tournament g : game) {
+                    		if(g.getUserSport().equals(userInput2)) {
+                    			g.modifyTournament();
+                    			g.tournamentDetails();
                     		}
+                    	}
                     break;
                 case 3:
                     //@TODO Complete tournament functions and games database
-                	//ALSO WORK IN PROGRESS
-            		games.displayTournaments(game);
-                	while(games.isDeleteActive() == true) {
-                    	System.out.println("Which tournament do you want to delete? \n Type 999 to go back to the menu."); //WIP
-                    	String userInput4 = input.next();
-                    	switch(userInput4.toUpperCase()) {
-                    	case "FOOTBALL":
-                    	case "VOLLEYBALL":
-                    	case "TENNIS":
-                    	case "BASKETBALL":
-                    	case "FENCING":
-                    	case "GOLF":
-                    	case "BOXING":
-                    	case "SWIMMING":
-                    	case "BASEBALL":
-                    	case "HANDBALL":
-                    		for(int i = 0; i < games.getMAX_TOURNAMENTS(); i++) {
-	                    		if(game[i] != null && game[i].getUserSport().equals(userInput4.toUpperCase())) {
-	                    			game[i] = null;
-	                    			}
-                    		}
+            			games.displayTournaments(game);
+                    	System.out.println("Which tournament do you want to delete? (Type the sport)");
+                    	String userInput3 = input.next().toUpperCase();
+                    	game.removeIf(g-> g.getUserSport().equals(userInput3));
                 		games.displayTournaments(game);
-                    		break;
-                    	case "999":            
-                    		games.setDeleteActive(false); //temp code just coz it's not done
-                    		break;	
-                    	}
-                	}
-                	games.setDeleteActive(true);
-                    break;
+                	break;
                 case 4:
                     sport.outputAllSports();
                     break;
@@ -137,15 +100,13 @@ public class OlympicGames {
         System.out.println("****************************************************");
     }
 	
-	public void displayTournaments(Tournament[] game) {
+	public void displayTournaments(ArrayList<Tournament> game) {
 		if(game == null) {
 			System.out.println("There are no tournaments currently...");
 		}
 		else {
 			for(Tournament g : game) { 
-	    		if(g != null) {
-	    			g.tournamentDetails();
-	    			}
+				g.tournamentDetails();
     		}
 		}
 
@@ -158,25 +119,4 @@ public class OlympicGames {
     public void setMenuActive(boolean b) {
         this.menuActive = b;
     }
-
-	public int getMAX_TOURNAMENTS() {
-		return MAX_TOURNAMENTS;
-	}
-	
-    public boolean isDeleteActive() {
-		return deleteActive;
-	}
-
-	public void setDeleteActive(boolean deleteActive) {
-		this.deleteActive = deleteActive;
-	}
-
-	public boolean isTournamentIsNull() {
-		return tournamentIsNull;
-	}
-
-	public void setTournamentIsNull(boolean tournamentIsNull) {
-		this.tournamentIsNull = tournamentIsNull;
-	}
-
 }
