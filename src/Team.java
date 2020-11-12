@@ -1,7 +1,7 @@
 //each new team will be its own instance
 
-import Local.Participants;
-import Local.Team;
+//import Local.Participants;
+//import Local.Team;
 
 public class Team extends Participants{
 	//private members

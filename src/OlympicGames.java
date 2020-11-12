@@ -1,5 +1,7 @@
 import Database.Connect;
 import java.beans.XMLEncoder;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -14,7 +16,7 @@ public class OlympicGames {
     private int menuChoice = 0;
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Class Instances
         OlympicGames games = new OlympicGames();
@@ -110,6 +112,8 @@ public class OlympicGames {
                     games.printMenu();
                     break;
                 case 0:
+                	database.removeCredentials();
+					database.endConn();
                     games.setMenuActive(false);
                     break;
             }
@@ -146,7 +150,7 @@ public class OlympicGames {
 		}
 
 	}
-	
+
     public boolean getMenuActive() {
         return this.menuActive;
     }

@@ -1,6 +1,7 @@
 import Database.Connect;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -54,10 +55,10 @@ public class Participants extends Countries {
 				String Country = rs.getString("country");
 				System.out.println(id + "             " + firstN + "     " + lastN + "    " + Age + "              " + Country);
 			}
-		} catch(SQLException e) {
+		} catch(SQLException | IOException e) {
 			System.out.println("SQL exception occurred" + e);
 		}
-		database.endConn();
+		//database.endConn();
 		
     }
 
@@ -102,7 +103,7 @@ public class Participants extends Countries {
 		{
 			System.out.println("ERROR: " + ex.getMessage());
 		}
-    	database.endConn();
+    	//database.endConn();
 	}
     
     public void addParticipants(String lastN, String firstN, int ageN){ //overload for teams

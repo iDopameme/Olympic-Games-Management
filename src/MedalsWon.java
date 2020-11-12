@@ -1,5 +1,6 @@
 import Database.Connect;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -25,10 +26,10 @@ public class MedalsWon {
                 int Bronze = rs.getInt("bronze");
                 System.out.println(Gold + " | " + Silver + " | " + Bronze);
             }
-        } catch(SQLException e) {
+        } catch(SQLException | IOException e) {
             System.out.println("SQL exception occurred" + e);
         }
-        database.endConn();
+        //database.endConn();
     }
 
 

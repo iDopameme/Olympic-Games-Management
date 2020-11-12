@@ -4,6 +4,7 @@
 import Database.Connect;
 import com.mysql.cj.protocol.Resultset;
 
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -68,10 +69,10 @@ public class Sports{
                 String type = rs.getString("sportType");
                 System.out.println(id + "     " + sport + "     " + type);
             }
-        } catch(SQLException e) {
+        } catch(SQLException | IOException e) {
             System.out.println("SQL exception occurred" + e);
         }
-        database.endConn();
+        //database.endConn();
     }
 
     public String selectSport(int pick) {
@@ -86,10 +87,10 @@ public class Sports{
             while (rs.next()) {
                 name = rs.getString("sName");
             }
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             System.out.println("SQL exception occurred" + e);
         }
-        database.endConn();
+        //database.endConn();
         return name;
     }
     
@@ -105,10 +106,10 @@ public class Sports{
             while (rs.next()) {
                 type = rs.getString("sportType");
             }
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             System.out.println("SQL exception occurred" + e);
         }
-        database.endConn();
+        //database.endConn();
 		return type;
     	
     }

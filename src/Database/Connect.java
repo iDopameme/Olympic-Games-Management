@@ -1,31 +1,62 @@
 package Database;
 
+import java.io.*;
 import java.sql.*;
 import java.util.Scanner;
+import java.util.Properties;
 
 public class Connect {
     private Connection conn;
     private String userName;
-    private String password;
+    private String passWord;
     private final String url = "jdbc:mysql://olympics.cs9ujvvnthok.us-east-2.rds.amazonaws.com:3306/?user=admin";
+    private final String path = "C:\\Olympic-Games-Management\\src\\Database\\credentials.properties"; // Path for properties file
+    Scanner inputStream = new Scanner(System.in);
+    Properties props = new Properties(); // Properties instance
+    FileInputStream in;{
+        try {
+            in = new FileInputStream(getPath());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    } // File input for obtaining the user and password during session after input
+    FileOutputStream out;{
+        try {
+            out = new FileOutputStream(getPath());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    } // File output for storing the user and password after initial login
 
-    Scanner myObj = new Scanner(System.in);
+    public void startConn() throws IOException {
 
-    public void startConn(){
-        if ((userName == null) || (password == null)) {
-            System.out.print("UserName Login: ");
-            userName = myObj.nextLine();
+        /////////////////////////////////////////////////////////
+        props.load(in);
+        setUserName(props.getProperty("username"));
+        setPassword(props.getProperty("password"));
+        // This sets the username and password to the connect
+        // class variables. If they are null then the if statement
+        // will execute. This happens upon first login
+        /////////////////////////////////////////////////////////
+
+        if ((getUserName() == null) || (getPassword() == null)) {
+            System.out.print("Username Login: ");
+            userName = inputStream.nextLine();
             setUserName(userName);
             System.out.print("Password: ");
-            password = myObj.nextLine();
-            setPassword(password);
-        }
+            passWord = inputStream.nextLine();
+            setPassword(passWord);
+
+            props.setProperty("username", userName);
+            props.setProperty("password", passWord);
+            props.store(out, "User Credentials");
+        } // When user logins at start of program
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(url, getUserName(), getPassword());
+            conn = DriverManager.getConnection(getUrl(), getUserName(), getPassword());
             System.out.println("Connected");
-        }
+        } // Establishing connection
         catch (Exception e)
         {
             System.err.println("Cannot connect to server");
@@ -33,7 +64,15 @@ public class Connect {
         }
     }
 
-    public void endConn(){
+    public void removeCredentials() throws IOException {
+        props.remove("username");
+        props.remove("password");
+        props.store(out, null);
+        in.close();
+        out.close();
+    } // Removes login details after user quits program
+
+    public void endConn() throws IOException {
         if (conn != null)
         {
             try {
@@ -45,19 +84,23 @@ public class Connect {
     }
 
     public Connection getConn(){
-        return conn;
+        return this.conn;
     } // returns connection
 
     public String getUrl() {
-        return url;
+        return this.url;
     } // Return the url used for the db connection
+
+    public String getPath() {
+        return this.path;
+    }
 
     public void setUserName(String u){
         this.userName = u;
     }
 
     public void setPassword(String p){
-        this.password = p;
+        this.passWord = p;
     }
 
     public String getUserName(){
@@ -65,6 +108,6 @@ public class Connect {
     }
 
     public String getPassword(){
-        return password;
-    } // MAJOR SECURITY FLAW????? -- Will look into this for a better solution (coding practice)
+        return passWord;
+    }
 }

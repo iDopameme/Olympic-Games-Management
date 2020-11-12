@@ -33,11 +33,11 @@ public class Countries {
                 System.out.println(n + "'s ID is: " + id); // TEMPORARY
             }
             rs.close();
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             System.out.println("SQL exception occurred" + e);
         }
 
-        database.endConn();
+        //database.endConn();
         return id;
     } // Obtaining the ID of a country name you pass through
 
@@ -58,11 +58,11 @@ public class Countries {
                 System.out.println("The country with ID " + i + " is: " + name +", " + ab); // TEMPORARY
             }
             rs.close();
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             System.out.println("SQL exception occurred" + e);
         }
 
-        database.endConn();
+        //database.endConn();
         return name + ab;
     } // Obtaining the name of the country by passing the ID
 
@@ -79,10 +79,10 @@ public class Countries {
                 String abbrev = rs.getString("cAbbrev");
                 System.out.println(id + "     " + name + "     " + abbrev);
             }
-        } catch(SQLException e) {
+        } catch(SQLException | IOException e) {
             System.out.println("SQL exception occurred" + e);
         }
-        database.endConn();
+        //database.endConn();
     }
 
     /////////////////////////////////////////////////////
@@ -122,7 +122,7 @@ public class Countries {
             System.out.println("ERROR: " + ex.getMessage());
         }
 
-        database.endConn();
+        //database.endConn();
     } // This function will not run if data already exists in the table
 
     public void removeAllValues() {
@@ -133,10 +133,10 @@ public class Countries {
             stmt.executeUpdate(sql);
             System.out.println("Countries table is now deleted");
 
-        } catch(SQLException e) {
+        } catch(SQLException | IOException e) {
             System.out.println("SQL exception occurred" + e);
         }
-        database.endConn();
+        //database.endConn();
     } //
 }
 
