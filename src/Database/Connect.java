@@ -10,7 +10,7 @@ public class Connect {
     private String userName;
     private String passWord;
     private final String url = "jdbc:mysql://olympics.cs9ujvvnthok.us-east-2.rds.amazonaws.com:3306/?user=admin";
-    private final String path = "C:\\Olympic-Games-Management\\src\\Database\\credentials.properties"; // Path for properties file
+    private final String path = "C:\\Olympic-Games-Management\\config.properties"; // Path for properties file
     Scanner inputStream = new Scanner(System.in);
     Properties props = new Properties(); // Properties instance
     FileInputStream in;{
@@ -67,7 +67,7 @@ public class Connect {
     public void removeCredentials() throws IOException {
         props.remove("username");
         props.remove("password");
-        props.store(out, null);
+        props.store(out, "null");
         in.close();
         out.close();
     } // Removes login details after user quits program
