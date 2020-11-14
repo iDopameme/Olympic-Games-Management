@@ -1,5 +1,4 @@
 import Database.Connect;
-
 import java.io.File;
 import java.io.IOException;
 import java.sql.PreparedStatement;
@@ -37,14 +36,13 @@ public class Participants extends Countries {
 		database = new Connect();
     }
 
-    public void listParticipants(){ //list in order
+    public void listParticipants(Connect conn) throws IOException { //list in order
     	for (String s : header) {
     		System.out.printf("%-12s ", s);
     	}
 		System.out.println();
 		try {
-			database.startConn();
-			Statement stmt = database.getConn().createStatement();
+			Statement stmt = conn.getConn().createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM olympics.participants");
 
 			while (rs.next()) {
@@ -55,11 +53,9 @@ public class Participants extends Countries {
 				String Country = rs.getString("country");
 				System.out.println(id + "             " + firstN + "     " + lastN + "    " + Age + "              " + Country);
 			}
-		} catch(SQLException | IOException e) {
+		} catch(SQLException e) {
 			System.out.println("SQL exception occurred" + e);
 		}
-		//database.endConn();
-		
     }
 
 //    public void addParticipants(String lastN, String firstN, int ageN, String countryN){
@@ -71,11 +67,10 @@ public class Participants extends Countries {
 //    	count++;
 //    }
 
-	public void addAllParticipants() {
+	public void addAllParticipants(Connect conn) throws IOException {
     	try {
-    		database.startConn();
     		String query = "INSERT INTO olympics.participants" + "(playerID, firstName, lastName, age, country) VALUES" + "(?, ?, ?, ?, ?);";
-			PreparedStatement pstmt = database.getConn().prepareStatement(query);
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
 
 			Scanner sc = new Scanner(new File("C:\\Olympic-Games-Management\\src\\csvFiles\\players.csv"));
 			sc.useDelimiter("[,\\n]"); // Delimiter skips comma and new line
@@ -103,7 +98,6 @@ public class Participants extends Countries {
 		{
 			System.out.println("ERROR: " + ex.getMessage());
 		}
-    	//database.endConn();
 	}
     
     public void addParticipants(String lastN, String firstN, int ageN){ //overload for teams

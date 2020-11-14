@@ -28,8 +28,8 @@ public class Connect {
         }
     } // File output for storing the user and password after initial login
 
-    public void startConn() throws IOException {
-
+    public boolean startConn() throws IOException {
+        boolean validation = false;
         /////////////////////////////////////////////////////////
         props.load(in);
         setUserName(props.getProperty("username"));
@@ -56,12 +56,15 @@ public class Connect {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(getUrl(), getUserName(), getPassword());
             System.out.println("Connected");
+            validation = true;
         } // Establishing connection
         catch (Exception e)
         {
             System.err.println("Cannot connect to server");
+            validation = false;
             System.exit(1);
         }
+        return validation;
     }
 
     public void removeCredentials() throws IOException {
@@ -72,7 +75,7 @@ public class Connect {
         out.close();
     } // Removes login details after user quits program
 
-    public void endConn() throws IOException {
+    public void endConn() {
         if (conn != null)
         {
             try {

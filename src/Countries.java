@@ -5,24 +5,15 @@ import Database.Connect;
 
 public class Countries {
     protected final static int TOTAL_COUNTRIES = 193;
-    Connect database;
 
-    Countries(){
-        init();
-    }
-
-    public void init(){
-        database = new Connect();
-    }
 
     ///////////////////////////////////////////////////////
     // Accessor Functions
-    public int getCountryID(String n){
+    public int getCountryID(String n, Connect conn) throws IOException {
         int id = 0;
         try {
-            database.startConn();
             String sql = "SELECT * FROM olympics.countries WHERE cName = ?";
-            PreparedStatement pstmt = database.getConn().prepareStatement(sql);
+            PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
             pstmt.setString(1, n);
             ResultSet rs = pstmt.executeQuery();
 
@@ -33,21 +24,19 @@ public class Countries {
                 System.out.println(n + "'s ID is: " + id); // TEMPORARY
             }
             rs.close();
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             System.out.println("SQL exception occurred" + e);
         }
 
-        //database.endConn();
         return id;
     } // Obtaining the ID of a country name you pass through
 
-    public String getCountries(int i){
+    public String getCountries(int i, Connect conn) throws IOException {
         String name = null;
         String ab = null;
         try {
-            database.startConn();
             String sql = "SELECT * FROM olympics.countries WHERE ID = ?";
-            PreparedStatement pstmt = database.getConn().prepareStatement(sql);
+            PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
             pstmt.setInt(1, i);
             ResultSet rs = pstmt.executeQuery();
 
@@ -58,18 +47,16 @@ public class Countries {
                 System.out.println("The country with ID " + i + " is: " + name +", " + ab); // TEMPORARY
             }
             rs.close();
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             System.out.println("SQL exception occurred" + e);
         }
 
-        //database.endConn();
         return name + ab;
     } // Obtaining the name of the country by passing the ID
 
-    public void outputTable(){
+    public void outputTable(Connect conn) throws IOException {
         try {
-            database.startConn();
-            Statement stmt = database.getConn().createStatement();
+            Statement stmt = conn.getConn().createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM olympics.countries");
             System.out.println("ID     Name           Abbreviation");
 
@@ -79,19 +66,17 @@ public class Countries {
                 String abbrev = rs.getString("cAbbrev");
                 System.out.println(id + "     " + name + "     " + abbrev);
             }
-        } catch(SQLException | IOException e) {
+        } catch(SQLException e) {
             System.out.println("SQL exception occurred" + e);
         }
-        //database.endConn();
     }
 
     /////////////////////////////////////////////////////
     // Mutator Functions
-    public void setAllValues() {
+    public void setAllValues(Connect conn) throws IOException {
         try {
-            database.startConn();
             String query = "INSERT INTO olympics.countries" + "(ID, cName, cAbbrev) VALUES" + "(?, ?, ?);"; // SQL Query
-            PreparedStatement pstmt = database.getConn().prepareStatement(query); // Prepared Statement in order to pass values through SQL statements
+            PreparedStatement pstmt = conn.getConn().prepareStatement(query); // Prepared Statement in order to pass values through SQL statements
 
             Scanner sc = new Scanner(new File("C:\\Olympic-Games-Management\\src\\csvFiles\\countries.csv")); // Opening csv file
             sc.useDelimiter("[,\\n]"); // Delimiter skips comma and new line
@@ -122,13 +107,12 @@ public class Countries {
             System.out.println("ERROR: " + ex.getMessage());
         }
 
-        //database.endConn();
     } // This function will not run if data already exists in the table
 
-    public void removeAllValues() {
+    public void removeAllValues(Connect conn) throws IOException {
         try {
-            database.startConn();
-            Statement stmt = database.getConn().createStatement();
+            conn.startConn();
+            Statement stmt = conn.getConn().createStatement();
             String sql = "DELETE FROM olympics.countries";
             stmt.executeUpdate(sql);
             System.out.println("Countries table is now deleted");
@@ -136,7 +120,6 @@ public class Countries {
         } catch(SQLException | IOException e) {
             System.out.println("SQL exception occurred" + e);
         }
-        //database.endConn();
     } //
 }
 

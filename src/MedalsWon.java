@@ -11,12 +11,10 @@ public class MedalsWon {
     private int totalSilverMedals;
     private int totalBronzeMedals;
 
-    Connect database = new Connect();
 
-    public void displayLeaderBoard(){
+    public void displayLeaderBoard(Connect conn) throws IOException {
         try {
-            database.startConn();
-            Statement stmt = database.getConn().createStatement();
+            Statement stmt = conn.getConn().createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM olympics.leaderboards");
             System.out.println("Gold | Silver | Bronze");
 
@@ -26,10 +24,9 @@ public class MedalsWon {
                 int Bronze = rs.getInt("bronze");
                 System.out.println(Gold + " | " + Silver + " | " + Bronze);
             }
-        } catch(SQLException | IOException e) {
+        } catch(SQLException e) {
             System.out.println("SQL exception occurred" + e);
         }
-        //database.endConn();
     }
 
 

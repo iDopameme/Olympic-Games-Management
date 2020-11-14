@@ -2,8 +2,6 @@
 // List of sports available in the Olympics
 //////////////////////////////////////////////////////////////////////////////////////////
 import Database.Connect;
-import com.mysql.cj.protocol.Resultset;
-
 import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Sports{
-    Connect database;
     Scanner input = new Scanner(System.in);
 
     // Constants
@@ -36,7 +33,6 @@ public class Sports{
         sportID = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
         idCount = 0;
         sportsList = new ArrayList<String>(); // ArrayList
-        database = new Connect();
     }
 
     //////////////////////////////////////
@@ -56,10 +52,9 @@ public class Sports{
         return sports[id];
     }
 
-    public void outputAllSports(){
+    public void outputAllSports(Connect conn) throws IOException {
         try {
-            database.startConn();
-            Statement stmt = database.getConn().createStatement();
+            Statement stmt = conn.getConn().createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM olympics.sports");
             System.out.println("ID     Sport     Type");
 
@@ -69,49 +64,43 @@ public class Sports{
                 String type = rs.getString("sportType");
                 System.out.println(id + "     " + sport + "     " + type);
             }
-        } catch(SQLException | IOException e) {
+        } catch(SQLException e) {
             System.out.println("SQL exception occurred" + e);
         }
-        //database.endConn();
     }
 
-    public String selectSport(int pick) {
+    public String selectSport(int pick, Connect conn) throws IOException {
         String name = null;
         try {
-            database.startConn();
             String sql = "SELECT sName FROM olympics.sports WHERE sportID = ?";
-            PreparedStatement pstmt = database.getConn().prepareStatement(sql);
+            PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
             pstmt.setInt(1, pick);
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 name = rs.getString("sName");
             }
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             System.out.println("SQL exception occurred" + e);
         }
-        //database.endConn();
         return name;
     }
     
-    public String getSportType(int pick) {
+    public String getSportType(int pick, Connect conn) throws IOException {
         String type = null;
         try {
-            database.startConn();
             String sql = "SELECT sportType FROM olympics.sports WHERE sportID = ?";
-            PreparedStatement pstmt = database.getConn().prepareStatement(sql);
+            PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
             pstmt.setInt(1, pick);
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 type = rs.getString("sportType");
             }
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             System.out.println("SQL exception occurred" + e);
         }
-        //database.endConn();
 		return type;
-    	
     }
     
     public void outputArrayList(){
