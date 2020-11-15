@@ -111,14 +111,4 @@ public class Time {
 				"START TIME: " + startTime +
 				"\nEND TIME: " + endTime;
 	}
-
-	////testing
-	public static void main(String[] args) {
-		Time time = new Time();
-		time.startTime();
-		time.endTime();
-		
-		System.out.println(time);
-	}
-	
 }

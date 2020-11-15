@@ -35,6 +35,7 @@ public class OlympicGames {
             //@TODO Add a output gameResults function to Tournament.java
             switch (userInput) {
                 case 1 -> {
+                	tournaments = new Tournament();
                     tournaments.createTournament(database);
                     game.add(tournaments);
                     games.displayTournaments(game);
@@ -45,7 +46,7 @@ public class OlympicGames {
                     String userInput2 = input.next().toUpperCase();
                     for (Tournament g : game) {
                         if (g.getUserSport().equals(userInput2)) {
-                            g.modifyTournament();
+                            g.modifyTournament(database);
                             g.tournamentDetails();
                         }
                     }
@@ -61,7 +62,12 @@ public class OlympicGames {
                 case 5 -> players.listParticipants(database);
                 case 6 -> country.outputTable(database);
                 case 7 -> medal.displayLeaderBoard(database);
-                case 8, 9 -> games.printMenu();
+                case 8 -> {
+                	for(Tournament g :game) {
+                		g.results();
+                	}
+                }
+                case 9 -> games.printMenu();
                 case 0 -> {
                     database.removeCredentials();
                     database.endConn();
@@ -77,14 +83,14 @@ public class OlympicGames {
 	public void printMenu() {
         System.out.println("****************************************************");
         System.out.println("************* Olympic Game Management **************");
-        System.out.println("+++ 1. Create Tournament"); // 60% Completed
-        System.out.println("+++ 2. Modify Tournament"); // 40% Completed
-        System.out.println("+++ 3. Delete Tournament"); // 10% Completed
+        System.out.println("+++ 1. Create Tournament"); // Completed
+        System.out.println("+++ 2. Modify Tournament"); // 50% Completed
+        System.out.println("+++ 3. Delete Tournament"); // Completed
         System.out.println("+++ 4. View list of sports"); // Completed
         System.out.println("+++ 5. View/Edit list of participants"); // 80% completed
         System.out.println("+++ 6. View all countries"); // 95% completed
         System.out.println("+++ 7. View medal leaderboard"); // work in progress
-        System.out.println("+++ 8. View tournament results"); // work in progress
+        System.out.println("+++ 8. Play and view tournament results"); // work in progress
         System.out.println("+++ 9. Print Main Menu again");
         System.out.println("+++ 0. Quit Olympic Game Management"); // Completed
         System.out.println("****************************************************");
