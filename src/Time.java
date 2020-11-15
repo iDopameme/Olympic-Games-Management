@@ -1,7 +1,13 @@
+import java.io.File;
+import java.sql.PreparedStatement;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Scanner;
 import java.util.Calendar;
+import java.sql.Timestamp;
 import Database.Connect;
+
+import javax.swing.plaf.synth.SynthTextAreaUI;
 
 public class Time {
 	//constants
@@ -13,12 +19,14 @@ public class Time {
     private int day;
     private int hour;
     private int minutes;
+    private int seconds;
     private boolean canSet;
     
     //class instances
     private Calendar calendar;
     private Date startTime;
     private Date endTime;
+	Timestamp timestamp;
 	Scanner input = new Scanner(System.in);
     
     public Time() {
@@ -26,16 +34,62 @@ public class Time {
     }
     
 	public void init() {
-    	calendar = Calendar.getInstance();
-    	year = calendar.get(Calendar.YEAR);
-    	month = calendar.get(Calendar.MONTH);
-    	day = calendar.get(Calendar.DAY_OF_MONTH);
+    	calendar = new GregorianCalendar();
+//    	year = calendar.get(Calendar.YEAR);
+//    	month = calendar.get(Calendar.MONTH);
+//    	day = calendar.get(Calendar.DAY_OF_MONTH);
     	canSet = true;
+	}
+
+	public Timestamp setTime(Connect conn) {
+    	boolean check = false;
+    	boolean finalDate;
+
+    	do {
+			System.out.println("========================");
+			System.out.println("Enter the year: (yyyy)");
+			year = input.nextInt();
+			System.out.println("Enter the month: (mm)");
+			month = input.nextInt();
+			System.out.println("Enter the day: (dd)");
+			day = input.nextInt();
+			System.out.println("Enter the hour: (00)\n24 Hour format:");
+			hour = input.nextInt();
+			System.out.println("Enter the minutes: (00):");
+			minutes = input.nextInt();
+			System.out.println("Enter the seconds: (00):");
+			seconds = input.nextInt();
+			System.out.println("========================");
+			System.out.println("Here's the date & time you selected: ");
+			System.out.println(year + "-" + month + "-" + day + " " + hour + ":" + minutes + ":" + seconds);
+			System.out.println("Submit this time?\n [false = No, true = yes]");
+			finalDate = input.hasNext();
+		} while (!finalDate);
+
+		month -= 1;
+		hour -= 5;
+    	calendar.set(year, month, day, hour, minutes, seconds);
+		long userTime = calendar.getTimeInMillis();
+		timestamp = new Timestamp(userTime);
+//		try {
+//			String query = "INSERT INTO olympics.games" + "(time) VALUES" + "(?);"; // SQL Query
+//			PreparedStatement pstmt = conn.getConn().prepareStatement(query); // Prepared Statement in order to pass values through SQL statements
+//
+//			pstmt.setTimestamp(1, timestamp);
+//			pstmt.executeUpdate();
+//			System.out.println("Time inserted into the table: " + timestamp);
+//			check = true;
+//		}
+//		catch (Exception ex)
+//		{
+//			System.out.println("ERROR: " + ex.getMessage());
+//		}
+    	return timestamp;
 	}
 
 	public void startTime() {
 		canSet = false;
-		System.out.println("================");
+		System.out.println("=====================");
 		System.out.println("Please print out the month and date the tournament will start:");
 		
 			System.out.print("Month:");
@@ -51,7 +105,7 @@ public class Time {
 		System.out.print("Day:");
 		int dayInput = input.nextInt();
 		this.day = dayInput;
-		System.out.println("================");
+		System.out.println("=====================");
 		while(canSet == false) {
 			System.out.println("START TIME");
 			System.out.print("Enter an hour:");

@@ -12,7 +12,7 @@ public class MedalsWon {
     private int totalBronzeMedals;
 
 
-    public void displayLeaderBoard(Connect conn) throws IOException {
+    public void displayLeaderBoard(Connect conn) {
         try {
             Statement stmt = conn.getConn().createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM olympics.leaderboards");

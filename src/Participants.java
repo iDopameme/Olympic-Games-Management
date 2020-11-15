@@ -58,25 +58,79 @@ public class Participants extends Countries {
 		}
     }
 
-//    public void addParticipants(String lastN, String firstN, int ageN, String countryN){
-//    	participantID[count] = count + 1;
-//    	firstName[count] = firstN;
-//    	lastName[count] = lastN;
-//    	age[count] = ageN;
-//    	pCountry[count] = countryN;
-//    	count++;
-//    }
+    public void listParticipants(String sport, Connect conn) {
+		for (String s : header) {
+			System.out.printf("%-12s ", s);
+		}
+		System.out.println();
+		try {
+			String sql = "SELECT playerID, firstName, lastName, age, country FROM olympics.participants WHERE playerSport = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
+			pstmt.setString(1, sport);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				int id = rs.getInt("playerID");
+				String firstN = rs.getString("firstName");
+				String lastN = rs.getString("lastName");
+				int Age = rs.getInt("age");
+				String Country = rs.getString("country");
+				System.out.println(id + "             " + firstN + "     " + lastN + "    " + Age + "              " + Country);
+			}
+		} catch(SQLException e) {
+			System.out.println("SQL exception occurred" + e);
+		}
+	}
+
+	public String[] getPlayerName(int pick, Connect conn) {
+		String firstN = null;
+		String lastN = null;
+		try {
+			String sql = "SELECT firstName, lastName FROM olympics.participants WHERE playerID = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
+			pstmt.setInt(1, pick);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				firstN = rs.getString("firstName");
+				lastN = rs.getString("lastName");
+			}
+		} catch (SQLException e) {
+			System.out.println("SQL exception occurred" + e);
+		}
+		return new String[] {firstN, lastN};
+	}
+
+	public String[] getPlayerName(int pick, String sport, Connect conn){
+		String firstN = null;
+		String lastN = null;
+		try {
+			String sql = "SELECT firstName, lastName FROM olympics.participants WHERE (playerID, playerSport) = (?, ?) ";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
+			pstmt.setInt(1, pick);
+			pstmt.setString(2, sport);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				firstN = rs.getString("firstName");
+				lastN = rs.getString("lastName");
+			}
+		} catch (SQLException e) {
+			System.out.println("SQL exception occurred" + e);
+		}
+		return new String[] {firstN, lastN};
+	}
 
 	public void addAllParticipants(Connect conn) throws IOException {
     	try {
-    		String query = "INSERT INTO olympics.participants" + "(playerID, firstName, lastName, age, country) VALUES" + "(?, ?, ?, ?, ?);";
+    		String query = "INSERT INTO olympics.participants" + "(playerID, firstName, lastName, age, country, playerSport) VALUES" + "(?, ?, ?, ?, ?, ?);";
 			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
 
-			Scanner sc = new Scanner(new File("C:\\Olympic-Games-Management\\src\\csvFiles\\players.csv"));
+			Scanner sc = new Scanner(new File("C:\\Olympic-Games-Management\\src\\csvFiles\\players v2.csv"));
 			sc.useDelimiter("[,\\n]"); // Delimiter skips comma and new line
 
 			int id, playerAge;
-			String first, last, c;
+			String first, last, c, sport;
 
 			while (sc.hasNext()) {
 				id = sc.nextInt();
@@ -84,14 +138,16 @@ public class Participants extends Countries {
 				last = sc.next();
 				playerAge = sc.nextInt();
 				c = sc.next();
+				sport = sc.next();
 
 				pstmt.setInt(1, id);
 				pstmt.setString(2, first);
 				pstmt.setString(3, last);
 				pstmt.setInt(4, playerAge);
 				pstmt.setString(5, c);
+				pstmt.setString(6, sport);
 				pstmt.executeUpdate();
-				System.out.println("ID: " + id + " First Name: " + first + " Last Name: " + last + " Age: " + playerAge + " Country: " + c);
+				System.out.println("ID: " + id + " First Name: " + first + " Last Name: " + last + " Age: " + playerAge + " Country: " + c + "Sport: " + sport);
 			}
 			System.out.println("All values successfully inserted into the table.");
 		} catch (Exception ex)
@@ -107,7 +163,16 @@ public class Participants extends Countries {
     	age[count] = ageN;
     	count++;  	
     }
-    
+
+	//    public void addParticipants(String lastN, String firstN, int ageN, String countryN){
+//    	participantID[count] = count + 1;
+//    	firstName[count] = firstN;
+//    	lastName[count] = lastN;
+//    	age[count] = ageN;
+//    	pCountry[count] = countryN;
+//    	count++;
+//    }
+
 // testing
 //	public static void main(String[] args) {
 //		Participants obj = new Participants();
