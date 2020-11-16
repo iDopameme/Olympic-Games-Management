@@ -82,7 +82,7 @@ public class Participants extends Countries {
 		}
 	}
 
-	public String[] getPlayerName(int pick, Connect conn) {
+	public String getPlayerName(int pick, Connect conn) {
 		String firstN = null;
 		String lastN = null;
 		try {
@@ -98,7 +98,7 @@ public class Participants extends Countries {
 		} catch (SQLException e) {
 			System.out.println("SQL exception occurred" + e);
 		}
-		return new String[] {firstN, lastN};
+		return firstN + lastN;
 	}
 
 	public String[] getPlayerName(int pick, String sport, Connect conn){

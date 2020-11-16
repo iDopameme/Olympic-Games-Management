@@ -6,7 +6,6 @@ import Database.Connect;
 public class Countries {
     protected final static int TOTAL_COUNTRIES = 193;
 
-
     ///////////////////////////////////////////////////////
     // Accessor Functions
     public int getCountryID(String n, Connect conn) throws IOException {
@@ -51,7 +50,7 @@ public class Countries {
             System.out.println("SQL exception occurred" + e);
         }
 
-        return name + ab;
+        return name;
     } // Obtaining the name of the country by passing the ID
 
     public void outputTable(Connect conn) throws IOException {
@@ -121,5 +120,27 @@ public class Countries {
             System.out.println("SQL exception occurred" + e);
         }
     } //
-}
 
+    //////////////////////////////////////////////////////
+    // SQL Table Joining
+    public void participatingCountries(Connect conn) {
+        int redundantID = 0;
+        try {
+            Statement stmt = conn.getConn().createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT ID, cName, cAbbrev FROM olympics.countries, olympics.participants WHERE countries.cName = participants.country");
+            System.out.println("ID     Name           Abbreviation");
+
+            while (rs.next()) {
+                int id = rs.getInt("ID");
+                String name = rs.getString("cName");
+                String abbrev = rs.getString("cAbbrev");
+                if (id != redundantID) {
+                    System.out.println(id + "     " + name + "           " + abbrev);
+                    redundantID = id;
+                }
+            }
+        } catch(SQLException e) {
+            System.out.println("SQL exception occurred" + e);
+        }
+    }
+}

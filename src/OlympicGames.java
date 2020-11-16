@@ -35,7 +35,6 @@ public class OlympicGames {
             //@TODO Add a output gameResults function to Tournament.java
             switch (userInput) {
                 case 1 -> {
-                	tournaments = new Tournament();
                     tournaments.createTournament(database);
                     game.add(tournaments);
                     games.displayTournaments(game);
@@ -46,7 +45,7 @@ public class OlympicGames {
                     String userInput2 = input.next().toUpperCase();
                     for (Tournament g : game) {
                         if (g.getUserSport().equals(userInput2)) {
-                            g.modifyTournament(database);
+                            g.modifyTournament();
                             g.tournamentDetails();
                         }
                     }
@@ -60,7 +59,7 @@ public class OlympicGames {
                 }
                 case 4 -> sport.outputAllSports(database);
                 case 5 -> players.listParticipants(database);
-                case 6 -> country.outputTable(database);
+                case 6 -> country.participatingCountries(database);
                 case 7 -> medal.displayLeaderBoard(database);
                 case 8 -> {
                 	for(Tournament g :game) {

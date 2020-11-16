@@ -3,7 +3,7 @@
 //import Local.Participants;
 //import Local.Team;
 
-public class Team extends Participants{
+public class Team{
 	//private members
 	private String teamName;
 	private Participants players;
@@ -17,7 +17,6 @@ public class Team extends Participants{
 	}
 	
 	public void init() {
-		participantID = new int[MAX_PARTICIPANTS];
 		players = new Participants();
 	}
 	

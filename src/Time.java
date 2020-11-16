@@ -41,7 +41,7 @@ public class Time {
     	canSet = true;
 	}
 
-	public Timestamp setTime(Connect conn) {
+	public Timestamp setTime() {
     	boolean check = false;
     	boolean finalDate;
 
