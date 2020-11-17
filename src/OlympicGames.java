@@ -45,7 +45,7 @@ public class OlympicGames {
                     String userInput2 = input.next().toUpperCase();
                     for (Tournament g : game) {
                         if (g.getUserSport().equals(userInput2)) {
-                            g.modifyTournament();
+                            g.modifyTournament(database);
                             g.tournamentDetails();
                         }
                     }
