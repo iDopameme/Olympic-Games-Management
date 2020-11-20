@@ -65,7 +65,6 @@ public class Tournament {
 			validation = createTournamentTable(conn, random_id, tournament_name, tournament_sport);
 		} while (!validation);
 
-
 		int tempSportID = sport.getSportID(conn, tournament_sport);
 		String sportType = sport.getSportType(tempSportID, conn);
 		if (sportType.equals("Team")){
@@ -75,20 +74,26 @@ public class Tournament {
 			System.out.print("Select " + teamCount + " countries by ID");
 			int[] teams = new int[teamCount];
 			for (int i = 0; i < teamCount; i++) {
-				teams[i] = input.nextInt();
-				int random_id = random.nextInt(1000);
-				createTeamTable(conn, random_id, country.getCountries(teams[i], conn), returnTournamentID(conn, tournament_name));
+				validation = false; //Required -- not redundant. Do not remove
+				do {
+					teams[i] = input.nextInt();
+					int random_id = random.nextInt(9999);
+					validation = createTeamTable(conn, random_id, country.getCountries(teams[i], conn), returnTournamentID(conn, tournament_name));
+			} while (!validation);
 			}
 		} else if (sportType.equals("Individual")){
 			System.out.print("How many players will be in this tournament? ");
 			int playerCount = input.nextInt();
-			players.outputTable(conn);
+			players.listParticipants(conn);
 			System.out.print("Select " + playerCount + " players by ID");
 			int[] playersArr = new int[playerCount];
 			for (int i = 0; i < playerCount; i++) {
-				playersArr[i] = input.nextInt();
-				int random_id = random.nextInt(1000);
-				createTeamTable(conn, random_id, players.getPlayerName(playersArr[i], conn), returnTournamentID(conn, tournament_name));
+				validation = false; //Required -- not redundant. Do not remove
+				do {
+					playersArr[i] = input.nextInt();
+					int random_id = random.nextInt(9999);
+					validation = createTeamTable(conn, random_id, players.getPlayerName(playersArr[i], conn), returnTournamentID(conn, tournament_name));
+				} while (!validation);
 			}
 		}
 	}
@@ -149,6 +154,8 @@ public class Tournament {
 		}
 		return validation;
 	}
+
+
 
 //	//setting sports
 //		sport.outputAllSports(conn);
