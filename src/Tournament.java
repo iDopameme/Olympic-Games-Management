@@ -259,29 +259,38 @@ public class Tournament {
 		}
 	}
 
-    public void viewTournament(Connect conn, String tournament_name){
-    	System.out.println("\n==============");
-    	System.out.println(userSport.toUpperCase() + "\nTOURNAMENT DETAILS");
-    	System.out.println("==============");
-    	if(type.equals("Team")) { //for team sports
-	    	for (Team t : teams) {
-	    			t.teamList();
-	    	}
-    	}
-    	else if(type.equals("Individual")) { //for head to head sports
-//        	players.listParticipants();
-    	}
-    	System.out.println(); 
-    	System.out.println(time);
-    	System.out.println();   
-    }
-
-    public void updatedTournament() {
-		System.out.println();
-		System.out.println("==========================");
-		System.out.println("UPDATED TOURNAMENT DETAILS");
-		System.out.println("==========================");
-    }
+	public void viewTournament(Connect conn, String tournament_name){
+  	  try {
+            String query = "SELECT id, tournament_name, tournament_type FROM olympics.Tournament where tournament_name = ?";
+            PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+            pstmt.setString(1, tournament_name);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()) {
+                //get tournament
+                int id = rs.getInt("id");
+                String tournamentName = rs.getString("tournament_name");
+                String tournamentType = rs.getString("tournament_type");
+                System.out.println("\n==============");
+                System.out.println("ID: "+ id);
+                System.out.println(tournamentName);
+                System.out.println(tournamentType);
+                System.out.println("==============");
+                
+                //get the participants
+                String query1 = "SELECT id, team_name FROM olympics.Team WHERE tournament_id = ?";
+                PreparedStatement pstmt1 = conn.getConn().prepareStatement(query1);
+                pstmt1.setInt(1, id);
+                ResultSet rs1 = pstmt1.executeQuery();
+                while(rs1.next()) {
+                    int pID = rs1.getInt("id");
+                    String pName = rs1.getString("team_name");
+                    System.out.println(pID + "     " + pName);
+                }
+            }
+        } catch (Exception e){
+            System.out.println("SQL exception occured" + e);
+        }     
+  }
 
     public void playTournament(){
 
