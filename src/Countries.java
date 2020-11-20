@@ -53,7 +53,7 @@ public class Countries {
         return name;
     } // Obtaining the name of the country by passing the ID
 
-    public void outputTable(Connect conn) throws IOException {
+    public void outputTable(Connect conn) {
         try {
             Statement stmt = conn.getConn().createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM olympics.countries");

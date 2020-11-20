@@ -36,26 +36,24 @@ public class OlympicGames {
             switch (userInput) {
                 case 1 -> {
                     tournaments.createTournament(database);
-                    //game.add(tournaments);
-                    //games.displayTournaments(game);
                 }
                 case 2 -> {
-                    games.displayTournaments(game);
-                    System.out.println("Which tournament do you want to modify? (Type the sport)");
-                    String userInput2 = input.next().toUpperCase();
-                    for (Tournament g : game) {
-                        if (g.getUserSport().equals(userInput2)) {
-                            g.modifyTournament(database);
-                            g.tournamentDetails();
-                        }
-                    }
+                    tournaments.viewTournamentTable(database);
+                    System.out.println("Which tournament do you want to modify? (Type the name)");
+                    String modify = input.next();
+                    tournaments.viewTournament(database, modify);
+//                    for (Tournament g : game) {
+//                        if (g.getUserSport().equals(userInput2)) {
+//                            g.modifyTournament(database);
+//                            g.tournamentDetails();
+//                        }
+//                    }
                 }
                 case 3 -> {
-                    games.displayTournaments(game);
-                    System.out.println("Which tournament do you want to delete? (Type the sport)");
-                    String userInput3 = input.next().toUpperCase();
-                    game.removeIf(g -> g.getUserSport().equals(userInput3));
-                    games.displayTournaments(game);
+                    tournaments.viewTournamentTable(database);
+                    System.out.println("Which tournament do you want to delete? (Type the ID)");
+                    int delete_id = input.nextInt();
+                    tournaments.deleteTournament(database, delete_id);
                 }
                 case 4 -> sport.outputAllSports(database);
                 case 5 -> players.listParticipants(database);
@@ -83,7 +81,7 @@ public class OlympicGames {
         System.out.println("****************************************************");
         System.out.println("************* Olympic Game Management **************");
         System.out.println("+++ 1. Create Tournament"); // Completed
-        System.out.println("+++ 2. Modify Tournament"); // 50% Completed
+        System.out.println("+++ 2. View/Modify Tournament"); // 50% Completed
         System.out.println("+++ 3. Delete Tournament"); // Completed
         System.out.println("+++ 4. View list of sports"); // Completed
         System.out.println("+++ 5. View/Edit list of participants"); // 80% completed
@@ -97,14 +95,7 @@ public class OlympicGames {
     }
 	
 	public void displayTournaments(ArrayList<Tournament> game) {
-		if(game == null) {
-			System.out.println("There are no tournaments currently...");
-		}
-		else {
-			for(Tournament g : game) { 
-				g.tournamentDetails();
-    		}
-		}
+
 	}
 
     public boolean getMenuActive() {

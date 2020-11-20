@@ -3,10 +3,7 @@ import com.mysql.cj.protocol.Resultset;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
@@ -155,54 +152,15 @@ public class Tournament {
 		return validation;
 	}
 
+	public boolean createMatch(Connect conn) {
+		boolean validation = false;
 
 
-//	//setting sports
-//		sport.outputAllSports(conn);
-//		System.out.println("+++ What sport will be played in the tournament?");
-//	int countryChoice = input.nextInt();
-//	userSport = sport.selectSport(countryChoice, conn);
-//	type = sport.getSportType(countryChoice, conn);
-//		System.out.println(userSport + " " + type);
-//		System.out.println("How many teams will be in this tournament? (Max 32)");
-//	int numOfTeams = input.nextInt();
-//		this.numOfTeams = numOfTeams;
-//		if (numOfTeams > MAX_TEAMS) {
-//		System.out.println("Error! Team limit was exceeded. Tournament creation terminated...");
-//		System.exit(1);
-//	}
-//	timestamp = time.setTime(); //setting time
-//
-//
-//	//setting participants based on sport type (WIP)
-//		if (type.equals("Team")) {
-//		country.participatingCountries(conn);
-//		System.out.println("+++ What countries are participating? [Select by ID]\n(Select " + numOfTeams + " amount of teams)");
-//		for (int i = 0; i < numOfTeams; i++) {
-//			int playersInput = input.nextInt();
-//			countries[i] = country.getCountries(playersInput, conn);
-//		}
-//
-//		//setting teams
-//		for(int i = 0; i < numOfTeams; i++) {
-//			team = new Team(countries[i]);
-//			team.newTeam(countries[i], team);
-//			teams.add(team);
-//		}
-//		//end creating tournament
-//		addNewTournament(conn, numOfTeams, type, timestamp, userSport, countries);
-//		System.out.println("+++ TOURNAMENT SUCCESSFULLY CREATED! +++");
-//	} else if (type.equals("Individual")) {
-//		players.listParticipants(type, conn);
-//		System.out.println("+++ Who is participating?");
-//		for (int i = 0; i < numOfTeams; i++)
-//		{
-//			int playersInput = input.nextInt();
-//			playerNames[i] = players.getPlayerName(playersInput, conn);
-//		}
-//		addNewTournament(conn, numOfTeams, type, timestamp, userSport, playerNames);
-//		System.out.println("+++ TOURNAMENT SUCCESSFULLY CREATED! +++");
-//	}
+
+		return validation;
+	}
+
+
 
 	public void modifyTournament(Connect conn) {
 		Scanner input = new Scanner(System.in);
@@ -258,11 +216,50 @@ public class Tournament {
 		}
 	}
 
-	public void deleteTournament() {
+	public boolean deleteTournament(Connect conn, int tournament_id) {
+		boolean validation;
+		try {
+			String deleteTeams = "DELETE FROM olympics.Team WHERE tournament_id = ?";
+			String deleteTournament = "DELETE FROM olympics.Tournament WHERE id = ?";
 
+			PreparedStatement pstmt = conn.getConn().prepareStatement(deleteTeams);
+			pstmt.setInt(1, tournament_id);
+			pstmt.executeUpdate();
+
+			pstmt = conn.getConn().prepareStatement(deleteTournament);
+			pstmt.setInt(1, tournament_id);
+			pstmt.executeUpdate();
+
+			validation = true;
+		} catch (Exception ex) {
+			System.out.println("ERROR: " + ex.getMessage());
+			validation = false;
+		}
+		return validation;
 	}
 
-    public void tournamentDetails(){
+//	DELETE
+//	FROM olympics.Tournament
+//	WHERE id = 134;
+
+	public void viewTournamentTable(Connect conn) {
+		try {
+			Statement stmt = conn.getConn().createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM olympics.Tournament");
+			System.out.println("ID     Name           Type");
+
+			while (rs.next()) {
+				int id = rs.getInt("id");
+				String name = rs.getString("tournament_name");
+				String type = rs.getString("tournament_type");
+				System.out.println(id + "     " + name + "     " + type);
+			}
+		} catch(SQLException e) {
+			System.out.println("SQL exception occurred" + e);
+		}
+	}
+
+    public void viewTournament(Connect conn, String tournament_name){
     	System.out.println("\n==============");
     	System.out.println(userSport.toUpperCase() + "\nTOURNAMENT DETAILS");
     	System.out.println("==============");
