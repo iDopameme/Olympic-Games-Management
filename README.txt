@@ -34,5 +34,8 @@ Features: The user will be able to input data to play through their own custom O
 
 The user will also be able to insert/remove/change who participates in their tournament (Name, Age, Country, etc.) as well as track the scoring and medal distribution. 
 
-This application will allow the user to act as an Olympic organizer, giving them access to a menu where they can choose from any of the featured actions. The user inputs data from an existing database which is then used to perform various functions, like organizing Olympic events, tracking tournament scores and results and determining medal distribution. The data can then be displayed for the user’s viewing pleasure once their tournaments are concluded.
+This application will allow the user to act as an Olympic organizer, giving them access to a menu where they can choose 
+from any of the featured actions. The user inputs data from an existing database which is then used to perform various 
+functions, like organizing Olympic events, tracking tournament scores and results and determining medal distribution. 
+The data can then be displayed for the user’s viewing pleasure once their tournaments are concluded.
 
