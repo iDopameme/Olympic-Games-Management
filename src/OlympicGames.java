@@ -36,8 +36,8 @@ public class OlympicGames {
             switch (userInput) {
                 case 1 -> {
                     tournaments.createTournament(database);
-                    game.add(tournaments);
-                    games.displayTournaments(game);
+                    //game.add(tournaments);
+                    //games.displayTournaments(game);
                 }
                 case 2 -> {
                     games.displayTournaments(game);

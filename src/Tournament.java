@@ -65,11 +65,13 @@ public class Tournament {
 			validation = createTournamentTable(conn, random_id, tournament_name, tournament_sport);
 		} while (!validation);
 
-		String sportType = sport.getSportType(sport.getSportID(tournament_name), conn);
-		if (sportType == "Team"){
+
+		int tempSportID = sport.getSportID(conn, tournament_sport);
+		String sportType = sport.getSportType(tempSportID, conn);
+		if (sportType.equals("Team")){
 			System.out.print("How many countries will be in this tournament? ");
 			int teamCount = input.nextInt();
-			country.outputTable(conn);
+			country.participatingCountries(conn);
 			System.out.print("Select " + teamCount + " countries by ID");
 			int[] teams = new int[teamCount];
 			for (int i = 0; i < teamCount; i++) {
@@ -77,16 +79,16 @@ public class Tournament {
 				int random_id = random.nextInt(1000);
 				createTeamTable(conn, random_id, country.getCountries(teams[i], conn), returnTournamentID(conn, tournament_name));
 			}
-		} else if (sportType == "Individual"){
+		} else if (sportType.equals("Individual")){
 			System.out.print("How many players will be in this tournament? ");
 			int playerCount = input.nextInt();
 			players.outputTable(conn);
 			System.out.print("Select " + playerCount + " players by ID");
-			int[] players = new int[playerCount];
+			int[] playersArr = new int[playerCount];
 			for (int i = 0; i < playerCount; i++) {
-				players[i] = input.nextInt();
+				playersArr[i] = input.nextInt();
 				int random_id = random.nextInt(1000);
-				//createTeamTable(conn, random_id, players.ge)
+				createTeamTable(conn, random_id, players.getPlayerName(playersArr[i], conn), returnTournamentID(conn, tournament_name));
 			}
 		}
 	}
@@ -138,6 +140,7 @@ public class Tournament {
 			pstmt.setInt(1, id);
 			pstmt.setString(2, team_name);
 			pstmt.setInt(3, tournament_id);
+			pstmt.executeUpdate();
 			validation = true;
 
 		} catch (Exception ex) {

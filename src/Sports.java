@@ -37,14 +37,43 @@ public class Sports{
 
     //////////////////////////////////////
     // Accessor Functions
-    public int getSportID(String s) {
-        int j = 0;
-        for (int i = 0; i < 10; i++) {
-            if (sports[i].equals(s)) {
-                j = (i + 1);
+    public int getSportID(Connect conn, String s) {
+        int id = 0;
+        try {
+            String sql = "SELECT sportID FROM olympics.sports WHERE sName = ?";
+            PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
+            pstmt.setString(1, s);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                id = rs.getInt("sportID");
+                System.out.println(s + "'s ID is: " + id); // TEMPORARY
             }
+
+            rs.close();
+        } catch (SQLException e) {
+            System.out.println("SQL exception occurred" + e);
         }
-        return j;
+        return id;
+    }
+
+    public String getSportType(int id, Connect conn) {
+        String type = null;
+        try {
+            String sql = "SELECT sportType FROM olympics.sports WHERE sportID = ?";
+            PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                type = rs.getString("sportType");
+                System.out.println(id + "'s type is: " + type);
+            }
+            rs.close();
+        } catch (SQLException e) {
+            System.out.println("SQL exception occurred" + e);
+        }
+        return type;
     }
 
 
@@ -86,22 +115,7 @@ public class Sports{
         return name;
     }
     
-    public String getSportType(int pick, Connect conn) throws IOException {
-        String type = null;
-        try {
-            String sql = "SELECT sportType FROM olympics.sports WHERE sportID = ?";
-            PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
-            pstmt.setInt(1, pick);
-            ResultSet rs = pstmt.executeQuery();
 
-            while (rs.next()) {
-                type = rs.getString("sportType");
-            }
-        } catch (SQLException e) {
-            System.out.println("SQL exception occurred" + e);
-        }
-		return type;
-    }
     
     public void outputArrayList(){
         System.out.println(sportsList);
