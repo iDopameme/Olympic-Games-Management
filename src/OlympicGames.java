@@ -1,5 +1,4 @@
 import Database.Connect;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -42,12 +41,7 @@ public class OlympicGames {
                     System.out.println("Which tournament do you want to modify? (Type the name)");
                     String modify = input.next();
                     tournaments.viewTournament(database, modify);
-//                    for (Tournament g : game) {
-//                        if (g.getUserSport().equals(userInput2)) {
-//                            g.modifyTournament(database);
-//                            g.tournamentDetails();
-//                        }
-//                    }
+                    tournaments.modifyTournament(database, modify);
                 }
                 case 3 -> {
                     tournaments.viewTournamentTable(database);

@@ -1,6 +1,5 @@
 import Database.Connect;
 import com.mysql.cj.protocol.Resultset;
-
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
@@ -132,7 +131,27 @@ public class Tournament {
 		}
 		return tournament_ID;
 	}
+	
+	public String returnTournamentSport(Connect conn, int ID) {
+		String tournamentSport = new String();
+		
+		try {
+			String query = "SELECT tournament_type FROM olympics.Tournament where id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+	        pstmt.setInt(1, ID);
+	        pstmt.executeQuery();
+	        ResultSet rs = pstmt.executeQuery();
+	        while (rs.next()) {
+				tournamentSport = rs.getString("tournament_type");
+			}
+			rs.close();
 
+		} catch(Exception e) {
+			System.out.println("SQL exception occured" + e);
+		}
+		return tournamentSport;
+	}
+	
 	public boolean createTeamTable(Connect conn, int id, String team_name, int tournament_id) {
 		boolean validation;
 		try {
@@ -160,58 +179,84 @@ public class Tournament {
 		return validation;
 	}
 
-
-
-	public void modifyTournament(Connect conn) {
+	public void modifyTournament(Connect conn, String tournament_name) {
+		//new instances
 		Scanner input = new Scanner(System.in);
+		players = new Participants();
+		game = new Tournament();
+		random = new Random();
+		sport = new Sports();
+		country = new Countries();
+		
+		//new members
+		int tournamentID = returnTournamentID(conn, tournament_name);
+		String tournamentSport = returnTournamentSport(conn, tournamentID);
+		int sportID = sport.getSportID(conn, tournamentSport);
+		String sportType = sport.getSportType(sportID, conn);
+		boolean validation;
+
 		System.out.println("What do you want to modify?");
 		System.out.println("+++ 1. Date and time");
 		System.out.println("+++ 2. Add Teams or Participants");
 		System.out.println("+++ 3. Delete Teams or Participants");
-		int userInput3 = input.nextInt();
-		switch(userInput3) {
+		int userInput = input.nextInt();
+		switch(userInput) {
 		case 1:
-			time = new Time();
-			time.startTime();
-			time.endTime();
-			game.updatedTournament();
+//			time = new Time();
+//			time.startTime();
+//			time.endTime();
+//			game.updatedTournament();
 			break;
 		case 2:
-			if(type.equals("Team")) {
-				if(teams.size() == numOfTeams) {
-					System.out.println("Cannot add team: Maxed sized reached! please delete a team first to add another team.");
-				}
-				else {
+			try {
+				if(sportType.equals("Team")){
 					country.participatingCountries(conn);
-					System.out.println("Which team do you want to add?");	
-					int playersInput = input.nextInt();
-					String c;
-					try {
-						c = country.getCountries(playersInput, conn);
-						team = new Team(c);
-						team.newTeam(c, team);
-						teams.add(team);
-					} catch (IOException e) {
-						System.out.println("Could not add team.");
-					}
+					System.out.println("Choose the ID of the team to add: ");
+					int id = input.nextInt();
+					validation = false; //Required -- not redundant. Do not remove
+					do {
+						int random_id = random.nextInt(9999);
+						validation = createTeamTable(conn, random_id, country.getCountries(id, conn), tournamentID);
+					} while (!validation);
+					//end updating
+					updatedTournament();
+					viewTournament(conn, tournament_name);
+					
 				}
-
+				else if(sportType.equals("Individual")) {
+					//get players
+					players.listParticipants(conn);
+					//select who to add
+		            System.out.println("Choose the ID of the participant to add: ");
+		            int id = input.nextInt();
+					validation = false; //Required -- not redundant. Do not remove
+					do {
+						int random_id = random.nextInt(9999);
+						validation = createTeamTable(conn, random_id, players.getPlayerName(id, conn), tournamentID);
+					} while (!validation);
+					//end updating
+					updatedTournament();
+					viewTournament(conn, tournament_name);
+				}
+			} catch (Exception e) {
+				System.out.println("SQL exception occured" + e);
 			}
-			else {
-				System.out.println("Which participant do you want to delete?");
-			}
-			game.updatedTournament();
 			break;
 		case 3:
-			if(type.equals("Team")) {
-				System.out.println("Which team do you want to delete?");	
-				String userInput = input.next().toUpperCase();
-				teams.removeIf(t-> t.getTeamName().equals(userInput));
+			try {		
+				//deleting teams or participant
+				String deleteTeam = "DELETE FROM olympics.Team WHERE (id, tournament_id) = (?, ?)";
+	            PreparedStatement pstmt2 = conn.getConn().prepareStatement(deleteTeam);
+	            System.out.println("Choose the ID of the team or participant to delete: ");
+	            int id = input.nextInt();
+	            pstmt2.setInt(1, id);
+	            pstmt2.setInt(2, tournamentID);
+	            pstmt2.executeUpdate();
+	            updatedTournament();
+	            viewTournament(conn, tournament_name);
+			} catch (Exception e) {
+				System.out.println("SQL exception occured" + e);
 			}
-			else {
-				System.out.println("Which participant do you want to delete?");
-			}
-			game.updatedTournament();
 			break;
 		}
 	}
