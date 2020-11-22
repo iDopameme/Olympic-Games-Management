@@ -6,13 +6,11 @@ import java.util.Scanner;
 public class OlympicGames {
     // Private variables
     private static boolean validation = false;
-    private boolean menuActive = true;
-
+    private static boolean menuActive = true;
 
     public static void main(String[] args) throws IOException {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Class Instances
-        OlympicGames games = new OlympicGames();
         Countries country = new Countries();
         Tournament tournaments = new Tournament();
         ArrayList<Tournament> game = new ArrayList<>();
@@ -21,21 +19,20 @@ public class OlympicGames {
         MedalsWon medal = new MedalsWon();
         Sports sport = new Sports();
         Connect database = new Connect();
+        Team team = new Team();
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         validation = database.startConn(); // Checks if the user login was successful.
 
-        games.printMenu(); // Prints the menu before while loop
-        while ((games.getMenuActive()) && (validation)) {
+        printMenu(); // Prints the menu before while loop
+        while ((getMenuActive()) && (validation)) {
             System.out.print("Please select a menu command: ");
             int userInput = input.nextInt(); // User input for menu
             System.out.println();
             //@TODO Complete tournament functions and games database
             //@TODO Add a output gameResults function to Tournament.java
             switch (userInput) {
-                case 1 -> {
-                    tournaments.createTournament(database);
-                }
+                case 1 -> tournaments.createTournament(database);
                 case 2 -> {
                     tournaments.viewTournamentTable(database);
                     System.out.println("Which tournament do you want to modify? (Type the name)");
@@ -44,10 +41,17 @@ public class OlympicGames {
                     tournaments.modifyTournament(database, modify);
                 }
                 case 3 -> {
+                    boolean deleteValidation;
                     tournaments.viewTournamentTable(database);
                     System.out.println("Which tournament do you want to delete? (Type the ID)");
                     int delete_id = input.nextInt();
-                    tournaments.deleteTournament(database, delete_id);
+
+                    deleteValidation = tournaments.deleteTournament(database, delete_id);
+                    if (deleteValidation) {
+                        System.out.println("Tournament and all teams playing in tournament was successfully deleted.");
+                    } else if (!deleteValidation) {
+                        System.out.println("Tournament deletion failed! Please try again and check your inputs.");
+                    }
                 }
                 case 4 -> sport.outputAllSports(database);
                 case 5 -> players.listParticipants(database);
@@ -58,11 +62,15 @@ public class OlympicGames {
                 		g.results();
                 	}
                 }
-                case 9 -> games.printMenu();
+                case 9 -> printMenu();
                 case 0 -> {
                     database.removeCredentials();
                     database.endConn();
-                    games.setMenuActive(false);
+                    setMenuActive(false);
+                }
+                case 11 -> {
+                    System.out.println("DEBUG: ");
+                    team.outputAllTeams(database, 212);
                 }
             }
         }
@@ -71,7 +79,7 @@ public class OlympicGames {
 
     }
 
-	public void printMenu() {
+	public static void printMenu() {
         System.out.println("****************************************************");
         System.out.println("************* Olympic Game Management **************");
         System.out.println("+++ 1. Create Tournament"); // Completed
@@ -87,24 +95,12 @@ public class OlympicGames {
         System.out.println("****************************************************");
         System.out.println("****************************************************");
     }
-	
-	public void displayTournaments(ArrayList<Tournament> game) {
 
-	}
-
-    public boolean getMenuActive() {
-        return this.menuActive;
+    public static boolean getMenuActive() {
+        return menuActive;
     }
 
-    public void setMenuActive(boolean b) {
-        this.menuActive = b;
-    }
-
-    public void setValidation(boolean v) {
-        validation = v;
-    }
-
-    public boolean getValidation() {
-        return validation;
+    public static void setMenuActive(boolean b) {
+        menuActive = b;
     }
 }
