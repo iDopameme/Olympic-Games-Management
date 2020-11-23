@@ -120,16 +120,24 @@ public class Tournament {
 		boolean validation;
 
 		System.out.println("What do you want to modify?");
-		System.out.println("+++ 1. Date and time");
+		System.out.println("+++ 1. Match Date and time");
 		System.out.println("+++ 2. Add Teams or Participants");
 		System.out.println("+++ 3. Delete Teams or Participants");
 		int userInput = input.nextInt();
 		switch(userInput) {
 			case 1:
-//			time = new Time();
-//			time.startTime();
-//			time.endTime();
-//			game.updatedTournament();
+//				try {
+//				timestamp = time.setTime();
+//				String timeQuery = "UPDATE olympics.Match SET date = ? WHERE touranment_id = ?";
+//				PreparedStatement pstmt = conn.getConn().prepareStatement(timeQuery);
+//				pstmt.setTimestamp(1, timestamp);
+//				pstmt.setInt(2, tournamentID);
+//				pstmt.executeUpdate();
+//				
+//			} catch (Exception e) {
+//				System.out.print("SQL exception occurred: " + e);
+//			}
+			viewTournament(conn, tournament_name);
 				break;
 			case 2:
 				try {
