@@ -1,6 +1,4 @@
 import Database.Connect;
-import com.mysql.cj.protocol.Resultset;
-import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.util.Scanner;
@@ -12,100 +10,158 @@ import java.util.Random;
 public class Tournament {
 	//constants
 	private final int MAX_TEAMS = 32;
+	private final int MIN_TEAMS = 2;
 
-	//private members
+	////private members
+	//--String
 	private String userSport;
-	private String type;
-	private int numOfTeams;
-
-	//instances
-	Sports sport;
-	Tournament game;
+	private String tournament_sport;
+	private String tournament_name;
+	private String sportType;
 	String[] countries;
 	String[] playerNames;
-	Countries country;
-	Time time;
-	Timestamp timestamp;
-	Random random;
+	//--Int
+	private int tournament_random_id;
+	private int team_random_id;
+	private int player_random_id;
+	private int SportID;
+	private int teamCount;
+	private int playerCount;
+	private int totalTeamAmount;
+	private int teamOne;
+	private int teamTwo;
+	int[] playersArr;
+	int[] teams;
+	//--Boolean
+	private Boolean TourValidation;
+	private Boolean InvidValidation;
+	private Boolean teamValidation;
+	//--Timestamp
+	private Timestamp matchTime;
+
+	//instances
+	private Sports sport;
+	private Countries country;
+	private Scanner input;
+	private Time time;
+	private Timestamp timestamp;
+	private Random random;
 	Participants players;
 	Team team;
-	List<Team> teams = new ArrayList<>();
+	List<Team> Arrteams;
 	Team gold;
 	Team silver;
 	Team bronze;
 
-	public void createTournament(Connect conn) throws IOException {
-		//new instances
-		userSport = "";
+	public void init(){
+		//Initialize Classes
 		sport = new Sports();
 		team = new Team();
-		game = new Tournament();
 		countries = new String[MAX_TEAMS];
 		playerNames = new String[MAX_TEAMS];
 		country = new Countries();
 		time = new Time();
 		players = new Participants();
-		Scanner input = new Scanner(System.in);
+		input = new Scanner(System.in);
 		random = new Random();
+
+		//Initialize Variables
+		userSport = null;
+		tournament_name = null;
+		tournament_sport = null;
+		sportType = null;
+
+		tournament_random_id = 0;
+		SportID = 0;
+		teamCount = 0;
+		team_random_id = 0;
+		playerCount = 0;
+		player_random_id = 0;
+		totalTeamAmount = 0;
+		teamOne = 0;
+		teamTwo = 0;
+
+		TourValidation = false;
+		InvidValidation = false;
+		teamValidation = false;
+
+		matchTime = null;
+
+	}
+
+	public void createTournament(Connect conn) throws IOException {
+		init();
 
 		//menu start
 		System.out.println("****************************************************");
 		System.out.println("************* Creating Tournament Menu *************");
 		System.out.print("Tournament Name: ");
-		String tournament_name = input.nextLine();
+		tournament_name = input.nextLine();
 		sport.outputAllSports(conn);
 		System.out.println("Which sport will be played in this tournament? ");
-		String tournament_sport = input.nextLine();
-		Boolean validation = false;
-		do {
-			int random_id = random.nextInt(1000);
-			validation = createTournamentTable(conn, random_id, tournament_name, tournament_sport);
-		} while (!validation);
+		tournament_sport = input.nextLine();
 
-		int tempSportID = sport.getSportID(conn, tournament_sport);
-		String sportType = sport.getSportType(tempSportID, conn);
+		do {
+			tournament_random_id = random.nextInt(1000);
+			TourValidation = createTournamentTable(conn, tournament_random_id, tournament_name, tournament_sport);
+		} while (!TourValidation);
+
+		SportID = sport.getSportID(conn, tournament_sport);
+		sportType = sport.getSportType(SportID, conn);
 		if (sportType.equals("Team")){
-			System.out.print("How many countries will be in this tournament? ");
-			int teamCount = input.nextInt();
+			System.out.println("How many countries will be in this tournament? -- Must be an even amount between " +  MIN_TEAMS + " and " + MAX_TEAMS);
+			teamCount = input.nextInt();
+			if ((teamCount >= MIN_TEAMS) && (teamCount <= MAX_TEAMS) && (teamCount % 2 == 0)) {
 			country.participatingCountries(conn);
-			System.out.print("Select " + teamCount + " countries by ID");
-			int[] teams = new int[teamCount];
+			System.out.println("Select " + teamCount + " countries by ID");
+			teams = new int[teamCount];
 			for (int i = 0; i < teamCount; i++) {
-				validation = false; //Required -- not redundant. Do not remove
 				do {
 					teams[i] = input.nextInt();
-					int random_id = random.nextInt(9999);
-					validation = createTeamTable(conn, random_id, country.getCountries(teams[i], conn), returnTournamentID(conn, tournament_name));
-			} while (!validation);
+					team_random_id = random.nextInt(9999);
+					teamValidation = createTeamTable(conn, team_random_id, country.getCountries(teams[i], conn), tournament_random_id);
+				} while (!teamValidation);
+			}
+			} else {
+				System.out.println("teamCount is out of bounds!!! tournament creation stopped");
+				deleteTournament(conn, tournament_random_id);
+				return;
 			}
 		} else if (sportType.equals("Individual")){
-			System.out.print("How many players will be in this tournament? ");
-			int playerCount = input.nextInt();
-			players.listParticipants(conn);
-			System.out.print("Select " + playerCount + " players by ID");
-			int[] playersArr = new int[playerCount];
-			for (int i = 0; i < playerCount; i++) {
-				validation = false; //Required -- not redundant. Do not remove
-				do {
-					playersArr[i] = input.nextInt();
-					int random_id = random.nextInt(9999);
-					validation = createTeamTable(conn, random_id, players.getPlayerName(playersArr[i], conn), returnTournamentID(conn, tournament_name));
-				} while (!validation);
+			System.out.println("How many players will be in this tournament? -- Must be an even amount between " +  MIN_TEAMS + " and " + MAX_TEAMS);
+			playerCount = input.nextInt();
+			if ((playerCount >= MIN_TEAMS) && (playerCount <= MAX_TEAMS) && (playerCount % 2 == 0)) {
+				players.listParticipants(conn);
+				System.out.println("Select " + playerCount + " players by ID");
+				playersArr = new int[playerCount];
+				for (int i = 0; i < playerCount; i++) {
+					InvidValidation = false; //Required -- not redundant. Do not remove
+					do {
+						playersArr[i] = input.nextInt();
+						player_random_id = random.nextInt(9999);
+						InvidValidation = createTeamTable(conn, player_random_id, players.getPlayerName(playersArr[i], conn), tournament_random_id);
+					} while (!InvidValidation);
+				}
+			} else {
+				System.out.println("playerCount is out of bounds!!! tournament creation stopped");
+				deleteTournament(conn, tournament_random_id);
+				return;
 			}
 		}
 
-		int totalTeam = team.getNumOfTeams(conn, returnTournamentID(conn, tournament_name));
+		totalTeamAmount = team.getNumOfTeams(conn, tournament_random_id);
 		System.out.println("****************************************************");
 		System.out.println("************* Match/Bracket Menu *************");
 		System.out.println("Please select which two teams will face each other: ");
-		team.outputAllTeams(conn, returnTournamentID(conn, tournament_name));
-		for (int i = 0; i < (totalTeam / 2); i++){
+		team.outputAllTeams(conn, tournament_random_id);
+		for (int i = 0; i < (totalTeamAmount / 2); i++){
 			System.out.print("Team_A:  ");
-			int teamOne = input.nextInt();
+			teamOne = input.nextInt();
 			System.out.print("Team_B:  ");
-			int teamTwo = input.nextInt();
-			Timestamp matchTime = time.setTime();
-			createMatch(conn, returnTournamentID(conn, tournament_name), teamOne, teamTwo, matchTime);
+			teamTwo = input.nextInt();
+			time = new Time();
+			matchTime = time.setTime();
+			createMatch(conn, tournament_random_id, teamOne, teamTwo, matchTime);
 		}
 		System.out.println("Tournament successfully created!!!");
 	}
@@ -114,7 +170,6 @@ public class Tournament {
 		//new instances
 		Scanner input = new Scanner(System.in);
 		players = new Participants();
-		game = new Tournament();
 		random = new Random();
 		sport = new Sports();
 		country = new Countries();
@@ -152,7 +207,6 @@ public class Tournament {
 						country.participatingCountries(conn);
 						System.out.println("Choose the ID of the team to add: ");
 						int id = input.nextInt();
-						validation = false; //Required -- not redundant. Do not remove
 						do {
 							int random_id = random.nextInt(9999);
 							validation = createTeamTable(conn, random_id, country.getCountries(id, conn), tournamentID);
@@ -168,7 +222,6 @@ public class Tournament {
 						//select who to add
 						System.out.println("Choose the ID of the participant to add: ");
 						int id = input.nextInt();
-						validation = false; //Required -- not redundant. Do not remove
 						do {
 							int random_id = random.nextInt(9999);
 							validation = createTeamTable(conn, random_id, players.getPlayerName(id, conn), tournamentID);
@@ -280,13 +333,14 @@ public class Tournament {
 	public boolean createMatch(Connect conn, int id_tournament, int id_teamA, int id_teamB, Timestamp gameTime) {
 		boolean validation = false;
 		try {
-			String query = "INSERT INTO olympics.Match" + "(tournament_id, team_a_id, team_b_id, date) VALUES" + "(?, ?, ?, ?);";
+			String query = "INSERT INTO olympics.Match" + "(tournament_id, team_a_id, team_b_id, date, status) VALUES" + "(?, ?, ?, ?, ?);";
 			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
 
 			pstmt.setInt(1, id_tournament);
 			pstmt.setInt(2, id_teamA);
 			pstmt.setInt(3, id_teamB);
 			pstmt.setTimestamp(4, gameTime);
+			pstmt.setString(5, "Pending");
 			pstmt.executeUpdate();
 
 			validation = true;

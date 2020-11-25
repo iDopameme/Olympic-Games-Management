@@ -19,6 +19,7 @@ public class OlympicGames {
         Sports sport = new Sports();
         Connect database = new Connect();
         Team team = new Team();
+        Time time = new Time();
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         validation = database.startConn(); // Checks if the user login was successful.
@@ -69,7 +70,7 @@ public class OlympicGames {
                 }
                 case 11 -> {
                     System.out.println("DEBUG: ");
-                    team.outputAllTeams(database, 212);
+                    time.setTime();
                 }
             }
         }

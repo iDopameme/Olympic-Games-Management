@@ -39,7 +39,6 @@ public class Time {
 	}
 
 	public Timestamp setTime() {
-    	boolean check = false;
     	boolean finalDate;
 
     	do {
@@ -60,7 +59,7 @@ public class Time {
 			System.out.println("Here's the date & time you selected: ");
 			System.out.println(year + "-" + month + "-" + day + " " + hour + ":" + minutes + ":" + seconds);
 			System.out.println("Submit this time?\n [false = No, true = yes]");
-			finalDate = input.hasNext();
+			finalDate = input.nextBoolean();
 		} while (!finalDate);
 
 		month -= 1;
