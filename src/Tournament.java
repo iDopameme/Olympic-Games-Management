@@ -38,6 +38,7 @@ public class Tournament {
 		//new instances
 		userSport = "";
 		sport = new Sports();
+		team = new Team();
 		game = new Tournament();
 		countries = new String[MAX_TEAMS];
 		playerNames = new String[MAX_TEAMS];
@@ -98,9 +99,15 @@ public class Tournament {
 		System.out.println("************* Match/Bracket Menu *************");
 		System.out.println("Please select which two teams will face each other: ");
 		team.outputAllTeams(conn, returnTournamentID(conn, tournament_name));
-		for (int i = 0; i < totalTeam; i++){
-			// Work in Progress
+		for (int i = 0; i < (totalTeam / 2); i++){
+			System.out.print("Team_A:  ");
+			int teamOne = input.nextInt();
+			System.out.print("Team_B:  ");
+			int teamTwo = input.nextInt();
+			Timestamp matchTime = time.setTime();
+			createMatch(conn, returnTournamentID(conn, tournament_name), teamOne, teamTwo, matchTime);
 		}
+		System.out.println("Tournament successfully created!!!");
 	}
 
 	public void modifyTournament(Connect conn, String tournament_name) {
@@ -270,9 +277,23 @@ public class Tournament {
 		return validation;
 	}
 
-	public boolean createMatch(Connect conn) {
+	public boolean createMatch(Connect conn, int id_tournament, int id_teamA, int id_teamB, Timestamp gameTime) {
 		boolean validation = false;
+		try {
+			String query = "INSERT INTO olympics.Match" + "(tournament_id, team_a_id, team_b_id, date) VALUES" + "(?, ?, ?, ?);";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
 
+			pstmt.setInt(1, id_tournament);
+			pstmt.setInt(2, id_teamA);
+			pstmt.setInt(3, id_teamB);
+			pstmt.setTimestamp(4, gameTime);
+			pstmt.executeUpdate();
+
+			validation = true;
+		} catch (Exception ex) {
+			System.out.println("ERROR: " + ex.getMessage());
+			validation = false;
+		}
 
 
 		return validation;

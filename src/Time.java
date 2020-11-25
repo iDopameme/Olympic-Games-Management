@@ -35,9 +35,12 @@ public class Time {
     
 	public void init() {
     	calendar = new GregorianCalendar();
-//    	year = calendar.get(Calendar.YEAR);
-//    	month = calendar.get(Calendar.MONTH);
-//    	day = calendar.get(Calendar.DAY_OF_MONTH);
+    	year = 0;
+    	month = 0;
+    	day = 0;
+    	hour = 0;
+    	minutes = 0;
+    	seconds = 0;
     	canSet = true;
 	}
 
@@ -71,19 +74,7 @@ public class Time {
     	calendar.set(year, month, day, hour, minutes, seconds);
 		long userTime = calendar.getTimeInMillis();
 		timestamp = new Timestamp(userTime);
-//		try {
-//			String query = "INSERT INTO olympics.games" + "(time) VALUES" + "(?);"; // SQL Query
-//			PreparedStatement pstmt = conn.getConn().prepareStatement(query); // Prepared Statement in order to pass values through SQL statements
-//
-//			pstmt.setTimestamp(1, timestamp);
-//			pstmt.executeUpdate();
-//			System.out.println("Time inserted into the table: " + timestamp);
-//			check = true;
-//		}
-//		catch (Exception ex)
-//		{
-//			System.out.println("ERROR: " + ex.getMessage());
-//		}
+
     	return timestamp;
 	}
 
