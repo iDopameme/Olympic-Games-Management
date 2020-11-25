@@ -13,7 +13,6 @@ public class OlympicGames {
         // Class Instances
         Countries country = new Countries();
         Tournament tournaments = new Tournament();
-        ArrayList<Tournament> game = new ArrayList<>();
         Participants players = new Participants();
         Scanner input = new Scanner(System.in);
         MedalsWon medal = new MedalsWon();
