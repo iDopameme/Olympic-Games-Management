@@ -167,6 +167,8 @@ public class Tournament {
 	}
 
 	public void modifyTournament(Connect conn, String tournament_name) {
+		init();
+
 		//new instances
 		Scanner input = new Scanner(System.in);
 		players = new Participants();
@@ -256,12 +258,13 @@ public class Tournament {
 	public boolean createTournamentTable(Connect conn, int id, String t_name, String t_type) {
 		boolean validation;
 		try {
-			String query = "INSERT INTO olympics.Tournament" + "(id, tournament_name, tournament_type) VALUES" + "(?, ?, ?);"; // SQL Query
+			String query = "INSERT INTO olympics.Tournament" + "(id, tournament_name, tournament_type, status) VALUES" + "(?, ?, ?, ?);"; // SQL Query
 			PreparedStatement pstmt = conn.getConn().prepareStatement(query); // Prepared Statement in order to pass values through SQL statements
 
 			pstmt.setInt(1, id);
 			pstmt.setString(2, t_name);
 			pstmt.setString(3, t_type);
+			pstmt.setString(4, "Pending");
 			pstmt.executeUpdate();
 			validation = true;
 
@@ -348,8 +351,6 @@ public class Tournament {
 			System.out.println("ERROR: " + ex.getMessage());
 			validation = false;
 		}
-
-
 		return validation;
 	}
 

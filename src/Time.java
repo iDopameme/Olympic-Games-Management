@@ -70,4 +70,10 @@ public class Time {
 
     	return timestamp;
 	}
+
+	public boolean updateTime(Connect conn, Timestamp updatedTime){
+
+
+    	return false;
+	}
 }
