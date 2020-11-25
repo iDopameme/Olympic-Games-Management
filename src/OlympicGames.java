@@ -58,9 +58,9 @@ public class OlympicGames {
                 case 6 -> country.participatingCountries(database);
                 case 7 -> medal.displayLeaderBoard(database);
                 case 8 -> {
-                	for(Tournament g :game) {
-                		g.results();
-                	}
+//                	for(Tournament g :game) {
+//                		g.results();
+//                	}
                 }
                 case 9 -> printMenu();
                 case 0 -> {

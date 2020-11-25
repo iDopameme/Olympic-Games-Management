@@ -356,34 +356,119 @@ public class Tournament {
 
     }
 
-    public void results(){ //randomized result
-    	if(type.equals("Team")){ //for teams
-    		if(bronze == null && silver == null && gold == null) {
-	    		Collections.shuffle(teams);
-	    		bronze = teams.get(0);
-	    		silver = teams.get(1);
-	    		gold = teams.get(2);
-	    		System.out.println("Tournament results for " + getUserSport() + " finished.");
-	    		displayResults();
+    public void results(Connect conn, int tournamentID){
+    	int matchID = returnMatchID(conn, tournamentID);
+    	String winner_A_name = new String();
+    	String winner_B_name = new String();
+    	try {
+    		String query = "SELECT winner_a_of, winner_b_of FROM olympics.Match_Knockout WHERE match_id = ?";
+    		PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+    		pstmt.setInt(1, matchID);
+    		ResultSet rs = pstmt.executeQuery();
+    		while(rs.next()) {
+    			int winnerA = rs.getInt("winner_a_of");
+    			int winnerB = rs.getInt("winner_b_of");
+    			winner_A_name = returnTeamName(conn, winnerA, tournamentID);
+    			winner_B_name = returnTeamName(conn, winnerB, tournamentID);
+    			//print winner
+    			System.out.println("Winner A: " + winner_A_name);
+    			System.out.println("Winner B: " + winner_B_name);
     		}
-    		else {
-    			System.out.println("Tournament for "+ getUserSport() + " has been played already!");
-    			displayResults();
-    		}
-    	}
-    	else { //for head to head sports
-    		
+    		rs.close();
+    	} catch (Exception e) {
+    		System.out.println("SQL exception occured" + e);
     	}
     }
-
-    public void displayResults() {
-    	System.out.println("\n==========================");
-		System.out.println(getUserSport() + "\nTOURNAMENT RESULTS");
-		System.out.println("==========================");
-		//System.out.println("First place: " + gold.getTeamName());
-		//System.out.println("Second place: " + silver.getTeamName());
-		//System.out.println("Third place: " + bronze.getTeamName());
+    
+    public void displayResults(Connect conn, String tournament_name) {
+    	//local members
+		int tournamentID = returnTournamentID(conn, tournament_name);
+		int matchID = returnMatchID(conn, tournamentID);
+		int teamA = 0;
+		int teamB = 0;
+		
+		//get teams id
+		try {
+			String query = "SELECT team_a_id, team_b_id FROM olympics.Match_Round WHERE match_id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+			pstmt.setInt(1, matchID);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				teamA = rs.getInt("team_a_id");
+				teamB = rs.getInt("team_b_id");
+			}
+			rs.close();
+		} catch (Exception e) {
+			System.out.println("SQL exception occured" + e);
+		}
+		
+		//get team names
+		String team_A_name = returnTeamName(conn, teamA, tournamentID);
+		String team_B_name = returnTeamName(conn, teamB, tournamentID);
+		
+		//get details of the match and display them
+    	try {
+    		String query = "SELECT id, date, team_a_score, team_b_score, status FROM olympics.Match WHERE tournament_id = ?";
+            PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+            pstmt.setInt(1, tournamentID);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()) {
+            	//get values
+            	int id = rs.getInt("id");
+            	Timestamp time = rs.getTimestamp("date");
+            	int A_Score = rs.getInt("team_a_score");
+            	int B_Score = rs.getInt("team_b_score");
+            	String status = rs.getString("status");
+            	//display
+                System.out.println("\n==============");
+            	System.out.println("MATCH ID: " + id);
+            	System.out.println(tournament_name + "MATCH");
+            	System.out.println("==============");
+            	System.out.println("Time: " + time);
+            	System.out.println("Team " + team_A_name + " Score: " + A_Score);
+            	System.out.println("Team" + team_B_name + " Score: " + B_Score);
+            	System.out.println("Status: " + status);
+            }
+            rs.close();
+    	} catch (Exception e) {
+            System.out.println("SQL exception occured" + e);
     	}
+    }
+    
+    public int returnMatchID(Connect conn, int tournamentID) {
+    	int match_id = 0;
+		try {
+			String query = "SELECT id FROM olympics.Match WHERE tournament_id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+			pstmt.setInt(1, tournamentID);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				match_id = rs.getInt("id");
+			}
+			rs.close();
+		} catch (Exception e) {
+			System.out.println("SQL exception occured" + e);
+		}
+    	return match_id;
+    }
+    
+    public String returnTeamName(Connect conn, int teamID, int tournamentID) {
+    	String name = new String();
+		try {
+			String query = "SELECT team_name FROM olympics.Team WHERE id = ? && tournament_id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+			pstmt.setInt(1, teamID);
+			pstmt.setInt(2, tournamentID);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				name = rs.getString("team_name");
+			}
+			rs.close();
+		} catch (Exception e) {
+			System.out.println("SQL exception occured" + e);
+		}
+    	return name;
+    }
 
 	public String getUserSport() {
 		return userSport.toUpperCase();
