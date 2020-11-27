@@ -57,13 +57,13 @@ public class Countries {
         try {
             Statement stmt = conn.getConn().createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM olympics.countries");
-            System.out.println("ID     Name           Abbreviation");
+            System.out.printf("%-7s%-15s%-15s\n","ID", "Name", "Abbreviation");
 
             while (rs.next()) {
                 int id = rs.getInt("ID");
                 String name = rs.getString("cName");
                 String abbrev = rs.getString("cAbbrev");
-                System.out.println(id + "     " + name + "     " + abbrev);
+                System.out.printf("%-7d%-15s%-15s\n", id, name, abbrev);
             }
         } catch(SQLException e) {
             System.out.println("SQL exception occurred" + e);
@@ -128,14 +128,14 @@ public class Countries {
         try {
             Statement stmt = conn.getConn().createStatement();
             ResultSet rs = stmt.executeQuery("SELECT ID, cName, cAbbrev FROM olympics.countries, olympics.participants WHERE countries.cName = participants.country");
-            System.out.println("ID     Name           Abbreviation");
+            System.out.printf("%-7s%-15s%-15s\n","ID", "Name", "Abbreviation");
 
             while (rs.next()) {
                 int id = rs.getInt("ID");
                 String name = rs.getString("cName");
                 String abbrev = rs.getString("cAbbrev");
                 if (id != redundantID) {
-                    System.out.println(id + "     " + name + "           " + abbrev);
+                	System.out.printf("%-7d%-15s%-15s\n", id, name, abbrev);
                     redundantID = id;
                 }
             }

@@ -85,13 +85,13 @@ public class Sports{
         try {
             Statement stmt = conn.getConn().createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM olympics.sports");
-            System.out.println("ID     Sport     Type");
+            System.out.printf("%-7s%-15s%-15s\n", "ID", "Sport", "Type");
 
             while (rs.next()) {
                 int id = rs.getInt("sportID");
                 String sport = rs.getString("sName");
                 String type = rs.getString("sportType");
-                System.out.println(id + "     " + sport + "     " + type);
+                System.out.printf("%-7d%-15s%-15s\n", id, sport, type);
             }
         } catch(SQLException e) {
             System.out.println("SQL exception occurred" + e);

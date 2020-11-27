@@ -23,7 +23,7 @@ public class Participants extends Countries {
 
     public void listParticipants(Connect conn) throws IOException { //list in order
     	for (String s : header) {
-    		System.out.printf("%-12s ", s);
+    		System.out.printf("%-14s ", s);
     	}
 		System.out.println();
 		try {
@@ -36,7 +36,7 @@ public class Participants extends Countries {
 				String lastN = rs.getString("lastName");
 				int Age = rs.getInt("age");
 				String Country = rs.getString("country");
-				System.out.println(id + "             " + firstN + "     " + lastN + "    " + Age + "              " + Country);
+				System.out.printf("%-15d%-15s%-15s%-15d%-15s\n", id, firstN, lastN, Age, Country);
 			}
 		} catch(SQLException e) {
 			System.out.println("SQL exception occurred" + e);
@@ -45,7 +45,7 @@ public class Participants extends Countries {
 
     public void listParticipants(String sport, Connect conn) {
 		for (String s : header) {
-			System.out.printf("%-12s ", s);
+			System.out.printf("%-14s ", s);
 		}
 		System.out.println();
 		try {
@@ -60,7 +60,7 @@ public class Participants extends Countries {
 				String lastN = rs.getString("lastName");
 				int Age = rs.getInt("age");
 				String Country = rs.getString("country");
-				System.out.println(id + "             " + firstN + "     " + lastN + "    " + Age + "              " + Country);
+				System.out.printf("%-15d%-15s%-15s%-15d%-15s\n", id, firstN, lastN, Age, Country);
 			}
 		} catch(SQLException e) {
 			System.out.println("SQL exception occurred" + e);
