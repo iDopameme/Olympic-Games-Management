@@ -21,23 +21,27 @@ public class Tournament {
 	String[] countries;
 	String[] playerNames;
 	//--Int
-	private int tournament_random_id;
-	private int team_random_id;
-	private int player_random_id;
+	private int tournament_id;
+	private int team_id;
+	private int player_id;
 	private int SportID;
 	private int teamCount;
 	private int playerCount;
 	private int totalTeamAmount;
 	private int teamOne;
 	private int teamTwo;
+	int userInput;
+	int modifyMatchTimeInput;
 	int[] playersArr;
 	int[] teams;
 	//--Boolean
 	private Boolean TourValidation;
 	private Boolean InvidValidation;
 	private Boolean teamValidation;
+	private Boolean modifyTimeBool;
 	//--Timestamp
 	private Timestamp matchTime;
+	private Timestamp modifyTime;
 
 	//instances
 	private Sports sport;
@@ -46,8 +50,9 @@ public class Tournament {
 	private Time time;
 	private Timestamp timestamp;
 	private Random random;
-	Participants players;
-	Team team;
+	private Participants players;
+	private Team team;
+	private Match match;
 	List<Team> Arrteams;
 	Team gold;
 	Team silver;
@@ -62,6 +67,7 @@ public class Tournament {
 		country = new Countries();
 		time = new Time();
 		players = new Participants();
+		match = new Match();
 		input = new Scanner(System.in);
 		random = new Random();
 
@@ -71,22 +77,24 @@ public class Tournament {
 		tournament_sport = null;
 		sportType = null;
 
-		tournament_random_id = 0;
+		tournament_id = 0;
 		SportID = 0;
 		teamCount = 0;
-		team_random_id = 0;
+		team_id = 0;
 		playerCount = 0;
-		player_random_id = 0;
+		player_id = 0;
 		totalTeamAmount = 0;
 		teamOne = 0;
 		teamTwo = 0;
+		userInput = 0;
+		modifyMatchTimeInput = 0;
 
 		TourValidation = false;
 		InvidValidation = false;
 		teamValidation = false;
 
 		matchTime = null;
-
+		modifyTime = null;
 	}
 
 	public void createTournament(Connect conn) throws IOException {
@@ -102,8 +110,8 @@ public class Tournament {
 		tournament_sport = input.nextLine();
 
 		do {
-			tournament_random_id = random.nextInt(1000);
-			TourValidation = createTournamentTable(conn, tournament_random_id, tournament_name, tournament_sport);
+			tournament_id = random.nextInt(1000);
+			TourValidation = createTournamentTable(conn, tournament_id, tournament_name, tournament_sport);
 		} while (!TourValidation);
 
 		SportID = sport.getSportID(conn, tournament_sport);
@@ -118,13 +126,13 @@ public class Tournament {
 			for (int i = 0; i < teamCount; i++) {
 				do {
 					teams[i] = input.nextInt();
-					team_random_id = random.nextInt(9999);
-					teamValidation = createTeamTable(conn, team_random_id, country.getCountries(teams[i], conn), tournament_random_id);
+					team_id = random.nextInt(9999);
+					teamValidation = createTeamTable(conn, team_id, country.getCountries(teams[i], conn), tournament_id);
 				} while (!teamValidation);
 			}
 			} else {
 				System.out.println("teamCount is out of bounds!!! tournament creation stopped");
-				deleteTournament(conn, tournament_random_id);
+				deleteTournament(conn, tournament_id);
 				return;
 			}
 		} else if (sportType.equals("Individual")){
@@ -138,22 +146,22 @@ public class Tournament {
 					InvidValidation = false; //Required -- not redundant. Do not remove
 					do {
 						playersArr[i] = input.nextInt();
-						player_random_id = random.nextInt(9999);
-						InvidValidation = createTeamTable(conn, player_random_id, players.getPlayerName(playersArr[i], conn), tournament_random_id);
+						player_id = random.nextInt(9999);
+						InvidValidation = createTeamTable(conn, player_id, players.getPlayerName(playersArr[i], conn), tournament_id);
 					} while (!InvidValidation);
 				}
 			} else {
 				System.out.println("playerCount is out of bounds!!! tournament creation stopped");
-				deleteTournament(conn, tournament_random_id);
+				deleteTournament(conn, tournament_id);
 				return;
 			}
 		}
 
-		totalTeamAmount = team.getNumOfTeams(conn, tournament_random_id);
+		totalTeamAmount = team.getNumOfTeams(conn, tournament_id);
 		System.out.println("****************************************************");
 		System.out.println("************* Match/Bracket Menu *************");
 		System.out.println("Please select which two teams will face each other: ");
-		team.outputAllTeams(conn, tournament_random_id);
+		team.outputAllTeams(conn, tournament_id);
 		for (int i = 0; i < (totalTeamAmount / 2); i++){
 			System.out.print("Team_A:  ");
 			teamOne = input.nextInt();
@@ -161,7 +169,7 @@ public class Tournament {
 			teamTwo = input.nextInt();
 			time = new Time();
 			matchTime = time.setTime();
-			createMatch(conn, tournament_random_id, teamOne, teamTwo, matchTime);
+			match.createMatch(conn, tournament_id, teamOne, teamTwo, matchTime);
 		}
 		System.out.println("Tournament successfully created!!!");
 	}
@@ -177,31 +185,30 @@ public class Tournament {
 		country = new Countries();
 
 		//new members
-		int tournamentID = returnTournamentID(conn, tournament_name);
-		String tournamentSport = returnTournamentSport(conn, tournamentID);
-		int sportID = sport.getSportID(conn, tournamentSport);
-		String sportType = sport.getSportType(sportID, conn);
+		tournament_id = returnTournamentID(conn, tournament_name);
+		tournament_sport = returnTournamentSport(conn, tournament_id);
+		SportID = sport.getSportID(conn, tournament_sport);
+		sportType = sport.getSportType(SportID, conn);
 		boolean validation;
 
 		System.out.println("What do you want to modify?");
 		System.out.println("+++ 1. Match Date and time");
 		System.out.println("+++ 2. Add Teams or Participants");
 		System.out.println("+++ 3. Delete Teams or Participants");
-		int userInput = input.nextInt();
+		userInput = input.nextInt();
 		switch(userInput) {
 			case 1:
-//				try {
-//				timestamp = time.setTime();
-//				String timeQuery = "UPDATE olympics.Match SET date = ? WHERE touranment_id = ?";
-//				PreparedStatement pstmt = conn.getConn().prepareStatement(timeQuery);
-//				pstmt.setTimestamp(1, timestamp);
-//				pstmt.setInt(2, tournamentID);
-//				pstmt.executeUpdate();
-//				
-//			} catch (Exception e) {
-//				System.out.print("SQL exception occurred: " + e);
-//			}
-			viewTournament(conn, tournament_name);
+				match.returnAllMatches(conn, tournament_id);
+				System.out.println("Which match's date would you like to change? [SELECT BY MATCH ID]");
+				modifyMatchTimeInput = input.nextInt();
+				modifyTime = time.setTime();
+				modifyTimeBool = time.updateTime(conn, modifyMatchTimeInput, modifyTime);
+				if (modifyTimeBool) {
+					System.out.println("Time was successfully modified on " + tournament_name +"!");
+				}
+				else if (!modifyTimeBool) {
+					System.out.println("Time was unsuccessfully changed...");
+				}
 				break;
 			case 2:
 				try {
@@ -211,7 +218,7 @@ public class Tournament {
 						int id = input.nextInt();
 						do {
 							int random_id = random.nextInt(9999);
-							validation = createTeamTable(conn, random_id, country.getCountries(id, conn), tournamentID);
+							validation = createTeamTable(conn, random_id, country.getCountries(id, conn), tournament_id);
 						} while (!validation);
 						//end updating
 						//updatedTournament();
@@ -226,7 +233,7 @@ public class Tournament {
 						int id = input.nextInt();
 						do {
 							int random_id = random.nextInt(9999);
-							validation = createTeamTable(conn, random_id, players.getPlayerName(id, conn), tournamentID);
+							validation = createTeamTable(conn, random_id, players.getPlayerName(id, conn), tournament_id);
 						} while (!validation);
 						//end updating
 						//updatedTournament();
@@ -244,7 +251,7 @@ public class Tournament {
 					System.out.println("Choose the ID of the team or participant to delete: ");
 					int id = input.nextInt();
 					pstmt2.setInt(1, id);
-					pstmt2.setInt(2, tournamentID);
+					pstmt2.setInt(2, tournament_id);
 					pstmt2.executeUpdate();
 					// updatedTournament();
 					viewTournament(conn, tournament_name);
@@ -333,29 +340,6 @@ public class Tournament {
 		return validation;
 	}
 
-	public boolean createMatch(Connect conn, int id_tournament, int id_teamA, int id_teamB, Timestamp gameTime) {
-		boolean validation = false;
-		try {
-			String query = "INSERT INTO olympics.Match" + "(tournament_id, team_a_id, team_b_id, date, status) VALUES" + "(?, ?, ?, ?, ?);";
-			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
-
-			pstmt.setInt(1, id_tournament);
-			pstmt.setInt(2, id_teamA);
-			pstmt.setInt(3, id_teamB);
-			pstmt.setTimestamp(4, gameTime);
-			pstmt.setString(5, "Pending");
-			pstmt.executeUpdate();
-
-			validation = true;
-		} catch (Exception ex) {
-			System.out.println("ERROR: " + ex.getMessage());
-			validation = false;
-		}
-		return validation;
-	}
-
-
-
 	public boolean deleteTournament(Connect conn, int tournament_id) {
 		boolean validation;
 		try {
@@ -382,13 +366,15 @@ public class Tournament {
 		try {
 			Statement stmt = conn.getConn().createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM olympics.Tournament");
-			System.out.println("ID     Name           Type");
+//			System.out.println("ID     Name           Type       Status");
 
 			while (rs.next()) {
 				int id = rs.getInt("id");
 				String name = rs.getString("tournament_name");
 				String type = rs.getString("tournament_type");
-				System.out.println(id + "     " + name + "     " + type);
+				String state = rs.getString("status");
+
+				System.out.println("ID: " + id + "     Name: " + name + "       Type: " + type + "     Status: " + state);
 			}
 		} catch(SQLException e) {
 			System.out.println("SQL exception occurred" + e);
@@ -433,7 +419,7 @@ public class Tournament {
     }
 
     public void results(Connect conn, int tournamentID){
-    	int matchID = returnMatchID(conn, tournamentID);
+    	int matchID = match.returnMatchID(conn, tournamentID);
     	String winner_A_name = new String();
     	String winner_B_name = new String();
     	try {
@@ -459,7 +445,7 @@ public class Tournament {
     public void displayResults(Connect conn, String tournament_name) {
     	//local members
 		int tournamentID = returnTournamentID(conn, tournament_name);
-		int matchID = returnMatchID(conn, tournamentID);
+		int matchID = match.returnMatchID(conn, tournamentID);
 		int teamA = 0;
 		int teamB = 0;
 		
@@ -510,24 +496,24 @@ public class Tournament {
             System.out.println("SQL exception occured" + e);
     	}
     }
-    
-    public int returnMatchID(Connect conn, int tournamentID) {
-    	int match_id = 0;
+
+    public String getTournament_status(Connect conn, String tournamentName){
+		String statusReturned = null;
 		try {
-			String query = "SELECT id FROM olympics.Match WHERE tournament_id = ?";
+			String query = "SELECT status FROM olympics.Tournament WHERE tournament_name = ?";
 			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
-			pstmt.setInt(1, tournamentID);
+			pstmt.setString(1, tournamentName);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
-				match_id = rs.getInt("id");
+				statusReturned = rs.getString("status");
 			}
 			rs.close();
 		} catch (Exception e) {
 			System.out.println("SQL exception occured" + e);
 		}
-    	return match_id;
-    }
-    
+		return statusReturned;
+	}
+
     public String returnTeamName(Connect conn, int teamID, int tournamentID) {
     	String name = new String();
 		try {
@@ -546,17 +532,6 @@ public class Tournament {
     	return name;
     }
 
-	public String getUserSport() {
-		return userSport.toUpperCase();
-	}
-
-	public Time getTime() {
-		return time;
-	}
-
-	public void setTime(Time time) {
-		this.time = time;
-	}    
 	
     
 }

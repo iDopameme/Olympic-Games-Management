@@ -7,6 +7,9 @@ public class OlympicGames {
     // Private variables
     private static boolean validation = false;
     private static boolean menuActive = true;
+    private static String modify = null;
+    private static String tourneyStatus = null;
+    private static int menu2Input = 0;
 
     public static void main(String[] args) throws IOException {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -35,10 +38,23 @@ public class OlympicGames {
                 case 1 -> tournaments.createTournament(database);
                 case 2 -> {
                     tournaments.viewTournamentTable(database);
-                    System.out.println("Which tournament do you want to modify? (Type the name)");
-                    String modify = input.next();
-                    tournaments.viewTournament(database, modify);
-                    tournaments.modifyTournament(database, modify);
+                    System.out.println("Which tournament do you want to view and/or modify? (Type the name)");
+                    System.out.println("***Only Tournaments in [Pending] status can be modified!+++");
+                    modify = input.next();
+
+                    tourneyStatus = tournaments.getTournament_status(database, modify);
+
+                    if (tourneyStatus.equals("Pending")) {
+                        System.out.println("+++ 1. View Tournament");
+                        System.out.println("+++ 2. Modify Tournament");
+                        System.out.println("Please select to view or modify the tournament.");
+                        menu2Input = input.nextInt();
+                        switch (menu2Input) {
+                            case 1 -> tournaments.viewTournament(database, modify);
+                            case 2 -> tournaments.modifyTournament(database, modify);
+                        }
+                    } else
+                        tournaments.viewTournament(database, modify);
                 }
                 case 3 -> {
                     boolean deleteValidation;

@@ -17,16 +17,16 @@ public class Time {
     private int minutes;
     private int seconds;
     private boolean canSet;
-    
+
     //class instances
     private Calendar calendar;
 	Timestamp timestamp;
 	Scanner input = new Scanner(System.in);
-    
+
     public Time() {
     	init();
     }
-    
+
 	public void init() {
     	calendar = new GregorianCalendar();
     	year = 0;
@@ -71,9 +71,23 @@ public class Time {
     	return timestamp;
 	}
 
-	public boolean updateTime(Connect conn, Timestamp updatedTime){
+	public boolean updateTime(Connect conn, int match_id, Timestamp updatedTime ) {
+    	boolean validation;
+		try {
+			String query = "UPDATE olympics.Match SET date = ? WHERE id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
 
+			pstmt.setTimestamp(1, updatedTime);
+			pstmt.setInt(2, match_id);
+			validation = true;
+			pstmt.executeUpdate();
 
-    	return false;
+		} catch (Exception ex) {
+			System.out.println("ERROR: " + ex.getMessage());
+			validation = false;
+		}
+		return validation;
 	}
+
+
 }
