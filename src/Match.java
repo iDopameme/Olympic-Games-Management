@@ -1,5 +1,6 @@
 import Database.Connect;
 import com.mysql.cj.protocol.Resultset;
+import com.mysql.cj.x.protobuf.MysqlxPrepare;
 
 import java.sql.*;
 
@@ -38,7 +39,7 @@ public class Match {
             }
             rs.close();
         } catch (Exception e) {
-            System.out.println("SQL exception occured: " + e);
+            System.out.println("SQL exception occurred: " + e);
         }
         return match_id;
     }

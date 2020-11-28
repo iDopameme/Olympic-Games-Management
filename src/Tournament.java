@@ -30,6 +30,7 @@ public class Tournament {
 	private int totalTeamAmount;
 	private int teamOne;
 	private int teamTwo;
+	private int participantsNum;
 	int userInput;
 	int modifyMatchTimeInput;
 	int[] playersArr;
@@ -86,6 +87,7 @@ public class Tournament {
 		totalTeamAmount = 0;
 		teamOne = 0;
 		teamTwo = 0;
+		participantsNum = 0;
 		userInput = 0;
 		modifyMatchTimeInput = 0;
 
@@ -143,7 +145,6 @@ public class Tournament {
 				System.out.println("Select " + playerCount + " players by ID");
 				playersArr = new int[playerCount];
 				for (int i = 0; i < playerCount; i++) {
-					InvidValidation = false; //Required -- not redundant. Do not remove
 					do {
 						playersArr[i] = input.nextInt();
 						player_id = random.nextInt(9999);
@@ -192,9 +193,9 @@ public class Tournament {
 		boolean validation;
 
 		System.out.println("What do you want to modify?");
-		System.out.println("+++ 1. Match Date and time");
-		System.out.println("+++ 2. Add Teams or Participants");
-		System.out.println("+++ 3. Delete Teams or Participants");
+		System.out.println("+++ 1. Match Date and time"); // 100% Completed
+		System.out.println("+++ 2. Add Teams or Participants"); // 75% Completed
+		System.out.println("+++ 3. Delete Teams or Participants"); // 25% Completed
 		userInput = input.nextInt();
 		switch(userInput) {
 			case 1:
@@ -211,33 +212,48 @@ public class Tournament {
 				}
 				break;
 			case 2:
+				participantsNum = team.getNumOfTeams(conn, tournament_id);
 				try {
 					if(sportType.equals("Team")){
-						country.participatingCountries(conn);
-						System.out.println("Choose the ID of the team to add: ");
-						int id = input.nextInt();
-						do {
-							int random_id = random.nextInt(9999);
-							validation = createTeamTable(conn, random_id, country.getCountries(id, conn), tournament_id);
-						} while (!validation);
-						//end updating
-						//updatedTournament();
-						viewTournament(conn, tournament_name);
-
+						System.out.println("Currently this tournament has " + participantsNum + " teams.");
+						System.out.println("How many teams would you like to add? (Must be a factor of 2)");
+						int addTeams = input.nextInt();
+						int[] pickTeam = new int[addTeams];
+						if ((addTeams % 2 == 0) && ((addTeams + participantsNum) >= 2) && ((addTeams + participantsNum) <= 32)) {
+							country.participatingCountries(conn);
+							System.out.println("Choose the ID of the team to add: ");
+							for (int i = 0; i < addTeams; i++) {
+								do {
+									pickTeam[i] = input.nextInt();
+									team_id = random.nextInt(9999);
+									validation = createTeamTable(conn, team_id, country.getCountries(pickTeam[i], conn), tournament_id);
+								} while (!validation);
+							}
+							viewTournament(conn, tournament_name);
+						} else {
+							System.out.println("Unable to add " + addTeams + " teams to the tournament");
+						}
 					}
 					else if(sportType.equals("Individual")) {
 						//get players
-						players.listParticipants(conn);
-						//select who to add
-						System.out.println("Choose the ID of the participant to add: ");
-						int id = input.nextInt();
-						do {
-							int random_id = random.nextInt(9999);
-							validation = createTeamTable(conn, random_id, players.getPlayerName(id, conn), tournament_id);
-						} while (!validation);
-						//end updating
-						//updatedTournament();
-						viewTournament(conn, tournament_name);
+						System.out.println("Currently this tournament has " + participantsNum + " players.");
+						System.out.println("How many players would you like to add? (Must be a factor of 2)");
+						int addPlayers = input.nextInt();
+						int[] pickPlayer = new int[addPlayers];
+						if ((addPlayers % 2 == 0) && ((addPlayers + participantsNum) >= 2) && ((addPlayers + participantsNum) <= 32)) {
+							players.listParticipants(conn);
+							System.out.println("Choose the ID of the participant to add: ");
+							for (int i = 0; i < addPlayers; i++) {
+								do {
+									pickPlayer[i] = input.nextInt();
+									player_id = random.nextInt(9999);
+									validation = createTeamTable(conn, player_id, players.getPlayerName(pickPlayer[i], conn), tournament_id);
+								} while (!validation);
+							}
+							viewTournament(conn, tournament_name);
+						} else {
+							System.out.println("Unable to add " + addPlayers + " players to the tournament");
+						}
 					}
 				} catch (Exception e) {
 					System.out.println("SQL exception occured" + e);
@@ -253,7 +269,7 @@ public class Tournament {
 					pstmt2.setInt(1, id);
 					pstmt2.setInt(2, tournament_id);
 					pstmt2.executeUpdate();
-					// updatedTournament();
+
 					viewTournament(conn, tournament_name);
 				} catch (Exception e) {
 					System.out.println("SQL exception occured" + e);
