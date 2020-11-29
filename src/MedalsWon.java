@@ -5,24 +5,48 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.io.*;
 import java.sql.*;
+import java.util.List;
 import java.util.Scanner;
 import Database.Connect;
+import java.util.ArrayList;
 
 public class MedalsWon {
     private int totalMedals;
     private int totalGoldMedals;
     private int totalSilverMedals;
     private int totalBronzeMedals;
+	List<Integer> countryArr = new ArrayList<Integer>();
     
     //instances
     Countries country = new Countries();
     
     public void displayLeaderBoard(Connect conn) {
     	String countryName = new String();
-        try {
-            Statement stmt = conn.getConn().createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM olympics.leaderboards");
-            System.out.printf("%-40s%-10s%-10s%-10s%-10s\n", "Country", "Gold", "Silver", "Bronze", "Total Medals"); //header
+    	
+    	//get participating countries
+    	try {
+    		int redundant = 0;
+    		 Statement stmt = conn.getConn().createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT ID FROM olympics.countries, olympics.participants WHERE countries.cName = participants.country");
+             while (rs.next()) {
+            	 int id = rs.getInt("ID");
+            	 if(id != redundant) {
+            		 countryArr.add(id);
+            		 redundant = id;
+            	 }
+             }
+    	} catch (Exception e){
+    		System.out.println("SQL Exception occured: " + e );
+    	}
+    	
+    	//display medals
+    	System.out.printf("%-40s%-10s%-10s%-10s%-10s\n", "Country", "Gold", "Silver", "Bronze", "Total Medals"); //header
+    	for (int cID : countryArr) {
+    		try {
+            String query = "SELECT countryID, gold, silver, bronze FROM olympics.leaderboards WHERE countryID = ?";
+            PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+            pstmt.setInt(1, cID);
+            ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
             	int id = rs.getInt("countryID");
@@ -40,6 +64,8 @@ public class MedalsWon {
         } catch(SQLException e) {
             System.out.println("SQL exception occurred" + e);
         }
+    	}
+
     }
 
 
