@@ -22,6 +22,7 @@ public class OlympicGames {
         MedalsWon medal = new MedalsWon();
         Sports sport = new Sports();
         Connect database = new Connect();
+        Match match = new Match();
         Team team = new Team();
         Time time = new Time();
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -88,7 +89,9 @@ public class OlympicGames {
                 }
                 case 11 -> {
                     System.out.println("DEBUG: ");
-                    time.setTime();
+                    System.out.println("Current amount of matches in Tournament# 812: " + match.getMatchCount(database, 812));
+                    System.out.println("Current amount of matches in Tournament# 61: " + match.getMatchCount(database, 61));
+                    System.out.println("Current amount of matches in Tournament# 652: " + match.getMatchCount(database, 652));
                 }
             }
         }

@@ -10,7 +10,7 @@ import java.util.Random;
 public class Tournament {
 	//constants
 	private final int MAX_TEAMS = 32;
-	private final int MIN_TEAMS = 2;
+	private final int MIN_TEAMS = 4;
 
 	////private members
 	//--String
@@ -67,6 +67,7 @@ public class Tournament {
 		team = new Team();
 		countries = new String[MAX_TEAMS];
 		playerNames = new String[MAX_TEAMS];
+		arrTeams = new String[0];
 		country = new Countries();
 		time = new Time();
 		players = new Participants();
@@ -289,7 +290,6 @@ public class Tournament {
 		sportType = returnTournamentSport(conn, tournament_id);
 		tournament_status = getTournament_status(conn, tournament_name);
 		teamCount = team.getNumOfTeams(conn, tournament_id);
-
 		arrTeams = new String[teamCount];
 		arrTeams = team.getAllTeams(conn, tournament_id);
 
@@ -298,7 +298,9 @@ public class Tournament {
 		}
 
 		if (!tournament_status.equals("Completed")) {
-
+			System.out.println("There are currently " + teamCount + " teams in this tournament...");
+			System.out.println("Here are the current matches scheduled:");
+			match.returnAllMatches(conn, tournament_id);
 		}
 	}
 
