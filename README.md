@@ -1,8 +1,8 @@
 
-#Olympic Games Project
+# Olympic Games Project
 Tournament Management & Bracket Generator Program
 
-##Table of Contents
+## Table of Contents
 * [General info](#general-info)
 * [Technologies](#technologies)
 * [Setup](#setup)
