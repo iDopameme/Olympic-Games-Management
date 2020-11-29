@@ -1,3 +1,5 @@
+[![Generic badge](https://img.shields.io/badge/Version-0.5.1-<COLOR>.svg)](https://shields.io/) 
+[![GitHub issues](https://img.shields.io/github/issues/iDopameme/Olympic-Games-Management)](https://github.com/iDopameme/Olympic-Games-Management/issues)
 
 # Olympic Games Project
 Tournament Management & Bracket Generator Program
