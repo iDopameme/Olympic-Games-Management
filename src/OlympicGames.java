@@ -10,6 +10,7 @@ public class OlympicGames {
     private static String modify = null;
     private static String tourneyStatus = null;
     private static int menu2Input = 0;
+    private static String playInput = null;
 
     public static void main(String[] args) throws IOException {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -74,9 +75,10 @@ public class OlympicGames {
                 case 6 -> country.participatingCountries(database);
                 case 7 -> medal.displayLeaderBoard(database);
                 case 8 -> {
-//                	for(Tournament g :game) {
-//                		g.results();
-//                	}
+                    tournaments.viewTournamentTable(database);
+                    System.out.println("Select which tournament you want to play [String]");
+                    playInput = input.next();
+                    tournaments.playTournament(database, playInput);
                 }
                 case 9 -> printMenu();
                 case 0 -> {

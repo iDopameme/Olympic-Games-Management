@@ -27,7 +27,50 @@ public class Team{
 		tournament_id = 0;
 	}
 
+
+	public boolean createTeamTable(Connect conn, int id, String team_name, int tournament_id) {
+		boolean validation;
+		try {
+			String query = "INSERT INTO olympics.Team" + "(id, team_name, tournament_id) VALUES" + "(?, ?, ?);";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+
+			pstmt.setInt(1, id);
+			pstmt.setString(2, team_name);
+			pstmt.setInt(3, tournament_id);
+			pstmt.executeUpdate();
+			validation = true;
+
+		} catch (Exception ex) {
+			System.out.println("ERROR: " + ex.getMessage());
+			validation = false;
+		}
+		return validation;
+	}
+
+	public String[] getAllTeams(Connect conn, int tournamentID) {
+		String[] listOfTeam = new String[getNumOfTeams(conn, tournamentID)];
+		int i = 0;
+		try {
+			String sql = "SELECT team_name FROM olympics.Team WHERE tournament_id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
+			pstmt.setInt(1, tournamentID);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				String nameTeam = rs.getString("team_name");
+				listOfTeam[i] = nameTeam;
+
+				i++;
+			}
+			rs.close();
+		} catch (SQLException e) {
+			System.out.println("SQL exception occurred" + e);
+		}
+		return listOfTeam;
+	}
+
 	public void outputAllTeams(Connect conn, int tournamentID) {
+
 		try {
 			String sql = "SELECT id, team_name FROM olympics.Team WHERE tournament_id = ?";
 			PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
@@ -98,6 +141,22 @@ public class Team{
 		return teamCOUNT;
 	}
 
-
+	public String returnTeamName(Connect conn, int teamID, int tournamentID) {
+		String name = new String();
+		try {
+			String query = "SELECT team_name FROM olympics.Team WHERE id = ? && tournament_id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+			pstmt.setInt(1, teamID);
+			pstmt.setInt(2, tournamentID);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				name = rs.getString("team_name");
+			}
+			rs.close();
+		} catch (Exception e) {
+			System.out.println("SQL exception occured" + e);
+		}
+		return name;
+	}
 	
 }

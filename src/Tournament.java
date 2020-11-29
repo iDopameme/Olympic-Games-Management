@@ -18,8 +18,10 @@ public class Tournament {
 	private String tournament_sport;
 	private String tournament_name;
 	private String sportType;
+	private String tournament_status;
 	String[] countries;
 	String[] playerNames;
+	String[] arrTeams;
 	//--Int
 	private int tournament_id;
 	private int team_id;
@@ -77,6 +79,7 @@ public class Tournament {
 		tournament_name = null;
 		tournament_sport = null;
 		sportType = null;
+		tournament_status = null;
 
 		tournament_id = 0;
 		SportID = 0;
@@ -129,7 +132,7 @@ public class Tournament {
 				do {
 					teams[i] = input.nextInt();
 					team_id = random.nextInt(9999);
-					teamValidation = createTeamTable(conn, team_id, country.getCountries(teams[i], conn), tournament_id);
+					teamValidation = team.createTeamTable(conn, team_id, country.getCountries(teams[i], conn), tournament_id);
 				} while (!teamValidation);
 			}
 			} else {
@@ -148,7 +151,7 @@ public class Tournament {
 					do {
 						playersArr[i] = input.nextInt();
 						player_id = random.nextInt(9999);
-						InvidValidation = createTeamTable(conn, player_id, players.getPlayerName(playersArr[i], conn), tournament_id);
+						InvidValidation = team.createTeamTable(conn, player_id, players.getPlayerName(playersArr[i], conn), tournament_id);
 					} while (!InvidValidation);
 				}
 			} else {
@@ -226,7 +229,7 @@ public class Tournament {
 								do {
 									pickTeam[i] = input.nextInt();
 									team_id = random.nextInt(9999);
-									validation = createTeamTable(conn, team_id, country.getCountries(pickTeam[i], conn), tournament_id);
+									validation = team.createTeamTable(conn, team_id, country.getCountries(pickTeam[i], conn), tournament_id);
 								} while (!validation);
 							}
 							viewTournament(conn, tournament_name);
@@ -247,7 +250,7 @@ public class Tournament {
 								do {
 									pickPlayer[i] = input.nextInt();
 									player_id = random.nextInt(9999);
-									validation = createTeamTable(conn, player_id, players.getPlayerName(pickPlayer[i], conn), tournament_id);
+									validation = team.createTeamTable(conn, player_id, players.getPlayerName(pickPlayer[i], conn), tournament_id);
 								} while (!validation);
 							}
 							viewTournament(conn, tournament_name);
@@ -275,6 +278,27 @@ public class Tournament {
 					System.out.println("SQL exception occured" + e);
 				}
 				break;
+		}
+	}
+
+	public void playTournament(Connect conn, String tournamentName){
+		init();
+		tournament_name = tournamentName;
+
+		tournament_id = returnTournamentID(conn, tournament_name);
+		sportType = returnTournamentSport(conn, tournament_id);
+		tournament_status = getTournament_status(conn, tournament_name);
+		teamCount = team.getNumOfTeams(conn, tournament_id);
+
+		arrTeams = new String[teamCount];
+		arrTeams = team.getAllTeams(conn, tournament_id);
+
+		for (int i = 0; i < teamCount; i++) {
+			System.out.println(arrTeams[i]);
+		}
+
+		if (!tournament_status.equals("Completed")) {
+
 		}
 	}
 
@@ -337,24 +361,7 @@ public class Tournament {
 		return tournamentSport;
 	}
 	
-	public boolean createTeamTable(Connect conn, int id, String team_name, int tournament_id) {
-		boolean validation;
-		try {
-			String query = "INSERT INTO olympics.Team" + "(id, team_name, tournament_id) VALUES" + "(?, ?, ?);";
-			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
 
-			pstmt.setInt(1, id);
-			pstmt.setString(2, team_name);
-			pstmt.setInt(3, tournament_id);
-			pstmt.executeUpdate();
-			validation = true;
-
-		} catch (Exception ex) {
-			System.out.println("ERROR: " + ex.getMessage());
-			validation = false;
-		}
-		return validation;
-	}
 
 	public boolean deleteTournament(Connect conn, int tournament_id) {
 		boolean validation;
@@ -382,7 +389,7 @@ public class Tournament {
 		try {
 			Statement stmt = conn.getConn().createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM olympics.Tournament");
-//			System.out.println("ID     Name           Type       Status");
+			System.out.printf("%-7s%-15s%-15s\n", "ID", "Name", "Type", "Status");
 
 			while (rs.next()) {
 				int id = rs.getInt("id");
@@ -390,7 +397,7 @@ public class Tournament {
 				String type = rs.getString("tournament_type");
 				String state = rs.getString("status");
 
-				System.out.println("ID: " + id + "     Name: " + name + "       Type: " + type + "     Status: " + state);
+				System.out.printf("%-7d%-15s%-15s\n", id, name, type, state);
 			}
 		} catch(SQLException e) {
 			System.out.println("SQL exception occurred" + e);
@@ -430,9 +437,7 @@ public class Tournament {
         }     
   }
 
-    public void playTournament(){
 
-    }
 
     public void results(Connect conn, int tournamentID){
     	int matchID = match.returnMatchID(conn, tournamentID);
@@ -446,8 +451,8 @@ public class Tournament {
     		while(rs.next()) {
     			int winnerA = rs.getInt("winner_a_of");
     			int winnerB = rs.getInt("winner_b_of");
-    			winner_A_name = returnTeamName(conn, winnerA, tournamentID);
-    			winner_B_name = returnTeamName(conn, winnerB, tournamentID);
+    			winner_A_name = team.returnTeamName(conn, winnerA, tournamentID);
+    			winner_B_name = team.returnTeamName(conn, winnerB, tournamentID);
     			//print winner
     			System.out.println("Winner A: " + winner_A_name);
     			System.out.println("Winner B: " + winner_B_name);
@@ -481,8 +486,8 @@ public class Tournament {
 		}
 		
 		//get team names
-		String team_A_name = returnTeamName(conn, teamA, tournamentID);
-		String team_B_name = returnTeamName(conn, teamB, tournamentID);
+		String team_A_name = team.returnTeamName(conn, teamA, tournamentID);
+		String team_B_name = team.returnTeamName(conn, teamB, tournamentID);
 		
 		//get details of the match and display them
     	try {
@@ -530,24 +535,4 @@ public class Tournament {
 		return statusReturned;
 	}
 
-    public String returnTeamName(Connect conn, int teamID, int tournamentID) {
-    	String name = new String();
-		try {
-			String query = "SELECT team_name FROM olympics.Team WHERE id = ? && tournament_id = ?";
-			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
-			pstmt.setInt(1, teamID);
-			pstmt.setInt(2, tournamentID);
-			ResultSet rs = pstmt.executeQuery();
-			while(rs.next()) {
-				name = rs.getString("team_name");
-			}
-			rs.close();
-		} catch (Exception e) {
-			System.out.println("SQL exception occured" + e);
-		}
-    	return name;
-    }
-
-	
-    
 }
