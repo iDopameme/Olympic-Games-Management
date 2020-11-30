@@ -79,9 +79,9 @@ public class Time {
 
 			pstmt.setTimestamp(1, updatedTime);
 			pstmt.setInt(2, match_id);
-			validation = true;
 			pstmt.executeUpdate();
 
+			validation = true;
 		} catch (Exception ex) {
 			System.out.println("ERROR: " + ex.getMessage());
 			validation = false;

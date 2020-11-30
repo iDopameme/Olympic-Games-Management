@@ -40,6 +40,7 @@ public class Tournament {
 	//--Boolean
 	private Boolean TourValidation;
 	private Boolean InvidValidation;
+	private boolean playValidation;
 	private Boolean teamValidation;
 	private Boolean modifyTimeBool;
 	//--Timestamp
@@ -98,6 +99,7 @@ public class Tournament {
 		TourValidation = false;
 		InvidValidation = false;
 		teamValidation = false;
+		playValidation = false;
 
 		matchTime = null;
 		modifyTime = null;
@@ -203,7 +205,7 @@ public class Tournament {
 		userInput = input.nextInt();
 		switch(userInput) {
 			case 1:
-				match.returnAllMatches(conn, tournament_id);
+				match.outputAllMatches(conn, tournament_id);
 				System.out.println("Which match's date would you like to change? [SELECT BY MATCH ID]");
 				modifyMatchTimeInput = input.nextInt();
 				modifyTime = time.setTime();
@@ -285,22 +287,43 @@ public class Tournament {
 	public void playTournament(Connect conn, String tournamentName){
 		init();
 		tournament_name = tournamentName;
-
 		tournament_id = returnTournamentID(conn, tournament_name);
 		sportType = returnTournamentSport(conn, tournament_id);
 		tournament_status = getTournament_status(conn, tournament_name);
 		teamCount = team.getNumOfTeams(conn, tournament_id);
 		arrTeams = new String[teamCount];
 		arrTeams = team.getAllTeams(conn, tournament_id);
+		int startInput = 0;
+
 
 		for (int i = 0; i < teamCount; i++) {
 			System.out.println(arrTeams[i]);
 		}
 
-		if (!tournament_status.equals("Completed")) {
+		if ((!tournament_status.equals("Completed")) && (!tournament_status.equals("In Progress"))) {
 			System.out.println("There are currently " + teamCount + " teams in this tournament...");
 			System.out.println("Here are the current matches scheduled:");
-			match.returnAllMatches(conn, tournament_id);
+			match.outputAllMatches(conn, tournament_id);
+			System.out.println("Would you like to officially start this tournament now? [Changes status to \"In Progress]\"\nSubmit 1 for yes or 2 for no");
+			System.out.println("WARNING! -- If you revert tournament state back to Pending any match results or medals assigned will be permanently deleted."); // This doesn't actually work yet lol
+			startInput = input.nextInt();
+			if (startInput == 1){
+				setTournamentStatus(conn, tournament_id, "In Progress");
+				System.out.println("Which match would you like to start now? [Select by ID]");
+				startInput = input.nextInt();
+				match.outputExactMatch(conn, startInput);
+
+			} else if (startInput == 2) {
+				System.out.println("Tournament will remain in " + tournament_status + " status...");
+			}
+		}  else if (tournament_status.equals("In Progress")) {
+			match.outputAllMatches(conn, tournament_id);
+			System.out.println("Which match would you like to start now? [Select by ID]");
+			startInput = input.nextInt();
+			match.outputExactMatch(conn, startInput);
+			System.out.println("Submit the score for ")
+		} else {
+			System.out.println(tournamentName + " has already concluded and cannot be played, would you like to output the results instead?");
 		}
 	}
 
@@ -342,9 +365,28 @@ public class Tournament {
 		}
 		return tournament_ID;
 	}
+
+	public String returnTournamentName(Connect conn, int id) {
+		String name = "";
+		try {
+			String query = "SELECT tournament_name FROM olympics.Tournament where id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+			pstmt.setInt(1, id);
+			pstmt.executeQuery();
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				name = rs.getString("tournament_name");
+			}
+			rs.close();
+
+		} catch(Exception e) {
+			System.out.println("SQL exception occured" + e);
+		}
+		return name;
+	}
 	
 	public String returnTournamentSport(Connect conn, int ID) {
-		String tournamentSport = new String();
+		String tournamentSport = "";
 		
 		try {
 			String query = "SELECT tournament_type FROM olympics.Tournament where id = ?";
@@ -362,8 +404,6 @@ public class Tournament {
 		}
 		return tournamentSport;
 	}
-	
-
 
 	public boolean deleteTournament(Connect conn, int tournament_id) {
 		boolean validation;
@@ -438,8 +478,6 @@ public class Tournament {
             System.out.println("SQL exception occured" + e);
         }     
   }
-
-
 
     public void results(Connect conn, int tournamentID){
     	int matchID = match.returnMatchID(conn, tournamentID);
@@ -532,9 +570,22 @@ public class Tournament {
 			}
 			rs.close();
 		} catch (Exception e) {
-			System.out.println("SQL exception occured" + e);
+			System.out.println("SQL exception occurred " + e);
 		}
 		return statusReturned;
+	}
+
+	public void setTournamentStatus(Connect conn, int tournamentID, String changeStatus) {
+		try {
+			String query = "UPDATE olympics.Tournament SET status = ? WHERE id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+
+			pstmt.setString(1, changeStatus);
+			pstmt.setInt(2, tournamentID);
+			pstmt.executeUpdate();
+		} catch (Exception e) {
+			System.out.println("SQL exception occurred " + e);
+		}
 	}
 
 }

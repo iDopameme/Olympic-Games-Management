@@ -47,6 +47,27 @@ public class Team{
 		return validation;
 	}
 
+	public String[] getMatchTeams(Connect conn, int id_match) {
+		String[] teams = new String[2];
+		try {
+			String sql = "SELECT team_name FROM olympics.Match WHERE id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
+			pstmt.setInt(1, id_match);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				String nameTeam = rs.getString("team_name");
+				listOfTeam[i] = nameTeam;
+
+				i++;
+			}
+			rs.close();
+		} catch (SQLException e) {
+			System.out.println("SQL exception occurred" + e);
+		}
+
+	}
+
 	public String[] getAllTeams(Connect conn, int tournamentID) {
 		String[] listOfTeam = new String[getNumOfTeams(conn, tournamentID)];
 		int i = 0;
