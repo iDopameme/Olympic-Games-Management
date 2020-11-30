@@ -10,21 +10,17 @@ public class Team{
 	//private members
 	private int teamID;
 	private String teamName;
-	private int tournament_id;
+	private int tournamentID;
+
 	
 	Team(){
-		init();
-	}
-
-	public Team(String country) {
-		teamName = country;
 		init();
 	}
 	
 	public void init() {
 		teamID = 0;
 		teamName = null;
-		tournament_id = 0;
+		tournamentID = 0;
 	}
 
 
@@ -47,29 +43,99 @@ public class Team{
 		return validation;
 	}
 
-	public String[] getMatchTeams(Connect conn, int id_match) {
-		String[] teams = new String[2];
+	public void setTeamName(Connect conn, int id_team, String name) {
 		try {
-			String sql = "SELECT team_name FROM olympics.Match WHERE id = ?";
-			PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
-			pstmt.setInt(1, id_match);
+			String query = "UPDATE olympics.Team SET team_name = ? WHERE id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+
+			pstmt.setString(1, name);
+			pstmt.setInt(2, id_team);
+			pstmt.executeUpdate();
+
+		} catch (Exception ex) {
+			System.out.println("ERROR: " + ex.getMessage());
+		}
+	} // Completed -- Needs Testing
+	// Changes the team name if need be.
+
+	public int getTeamID(Connect conn, String name_team) {
+		init();
+		try {
+			String query = "SELECT id FROM olympics.Team WHERE team_name = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+			pstmt.setString(1, name_team);
 			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				String nameTeam = rs.getString("team_name");
-				listOfTeam[i] = nameTeam;
-
-				i++;
+				teamID = rs.getInt("id");
 			}
 			rs.close();
 		} catch (SQLException e) {
 			System.out.println("SQL exception occurred" + e);
 		}
+		return teamID;
+	} // Completed -- Needs Testing
 
-	}
+	public String getTeamName(Connect conn, int team_id) {
+		init();
+		try {
+			String sql = "SELECT team_name FROM olympics.Team WHERE id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
+			pstmt.setInt(1, team_id);
+			ResultSet rs = pstmt.executeQuery();
 
-	public String[] getAllTeams(Connect conn, int tournamentID) {
-		String[] listOfTeam = new String[getNumOfTeams(conn, tournamentID)];
+			while (rs.next()) {
+				teamName = rs.getString("team_name");
+			}
+			rs.close();
+		} catch (SQLException e) {
+			System.out.println("SQL exception occurred" + e);
+		}
+		return teamName;
+	} // Completed -- Needs Testing
+
+	public int getTournamentID(Connect conn, int team_id) {
+		init();
+		try {
+			String query = "SELECT tournament_id FROM olympics.Team WHERE id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+			pstmt.setInt(1, team_id);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				tournamentID = rs.getInt("id");
+			}
+			rs.close();
+		} catch (SQLException e) {
+			System.out.println("SQL exception occurred" + e);
+		}
+		return tournamentID;
+	} // Completed -- Needs Testing
+
+//	public String[] getTeamIDs(Connect conn, int id_match) {
+//		int[] teamIDs = match.getTeamIDsFromMatch(conn, id_match);
+//		String[] teams = new String[2];
+//
+//		try {
+//			String sql = "SELECT team_name FROM olympics.Team WHERE id = ?";
+//			PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
+//
+//			for (int i = 0; i < 2; i++) {
+//				pstmt.setInt(1, teamIDs[i]);
+//				ResultSet rs = pstmt.executeQuery();
+//				while (rs.next()) {
+//					teams[i] = rs.getString("team_name");
+//				}
+//				rs.close();
+//			}
+//		} catch (SQLException e) {
+//			System.out.println("SQL exception occurred" + e);
+//		}
+//		return teams;
+//	}
+
+	public String[] getAllNames(Connect conn, int tournamentID) {
+		String[] listOfTeam = new String[getTeamCount(conn, tournamentID)];
 		int i = 0;
 		try {
 			String sql = "SELECT team_name FROM olympics.Team WHERE tournament_id = ?";
@@ -110,42 +176,7 @@ public class Team{
 		}
 	}
 
-	public int getTeamID(Connect conn, String teamName){
-		teamID = 0;
-		try {
-			String sql = "SELECT id FROM olympics.Team WHERE team_name = ?";
-			PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
-			pstmt.setString(1, teamName);
-			ResultSet rs = pstmt.executeQuery();
-
-			while (rs.next()) {
-				teamID = rs.getInt("id");
-			}
-		} catch (SQLException e) {
-			System.out.println("SQL exception occurred" + e);
-		}
-		return teamID;
-	}
-
-	public String getTeamName(Connect conn, int team_id) {
-		teamName = null;
-		try {
-			String sql = "SELECT team_name FROM olympics.Team WHERE id = ?";
-			PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
-			pstmt.setInt(1, team_id);
-			ResultSet rs = pstmt.executeQuery();
-
-			while (rs.next()) {
-				teamName = rs.getString("team_name");
-			}
-			rs.close();
-		} catch (SQLException e) {
-			System.out.println("SQL exception occurred" + e);
-		}
-		return teamName;
-	}
-
-	public int getNumOfTeams(Connect conn, int tournamentID){
+	public int getTeamCount(Connect conn, int tournamentID){
 		int teamCOUNT = 0;
 		try {
 			String sql = "SELECT COUNT(tournament_id) FROM olympics.Team WHERE tournament_id = ?";

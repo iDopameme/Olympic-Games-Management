@@ -1,6 +1,7 @@
 import Database.Connect;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class OlympicGames {
@@ -87,12 +88,7 @@ public class OlympicGames {
                     database.endConn();
                     setMenuActive(false);
                 }
-                case 11 -> {
-                    System.out.println("DEBUG: ");
-                    System.out.println("Current amount of matches in Tournament# 812: " + match.getMatchCount(database, 812));
-                    System.out.println("Current amount of matches in Tournament# 61: " + match.getMatchCount(database, 61));
-                    System.out.println("Current amount of matches in Tournament# 652: " + match.getMatchCount(database, 652));
-                }
+                case 11 -> System.out.println(match.getTournamentIDFromMatch(database, 13));
             }
         }
         if (!validation)

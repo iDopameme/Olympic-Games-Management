@@ -33,8 +33,9 @@ public class Tournament {
 	private int teamOne;
 	private int teamTwo;
 	private int participantsNum;
-	int userInput;
-	int modifyMatchTimeInput;
+	private int userInput;
+	private int modifyMatchTimeInput;
+	private int submitScoreA, submitScoreB;
 	int[] playersArr;
 	int[] teams;
 	//--Boolean
@@ -95,6 +96,8 @@ public class Tournament {
 		participantsNum = 0;
 		userInput = 0;
 		modifyMatchTimeInput = 0;
+		submitScoreA = 0;
+		submitScoreB = 0;
 
 		TourValidation = false;
 		InvidValidation = false;
@@ -164,7 +167,7 @@ public class Tournament {
 			}
 		}
 
-		totalTeamAmount = team.getNumOfTeams(conn, tournament_id);
+		totalTeamAmount = team.getTeamCount(conn, tournament_id);
 		System.out.println("****************************************************");
 		System.out.println("************* Match/Bracket Menu *************");
 		System.out.println("Please select which two teams will face each other: ");
@@ -176,7 +179,7 @@ public class Tournament {
 			teamTwo = input.nextInt();
 			time = new Time();
 			matchTime = time.setTime();
-			match.createMatch(conn, tournament_id, teamOne, teamTwo, matchTime);
+			match.createMatch(conn, tournament_id, teamOne, teamTwo, matchTime, "Pending");
 		}
 		System.out.println("Tournament successfully created!!!");
 	}
@@ -205,7 +208,7 @@ public class Tournament {
 		userInput = input.nextInt();
 		switch(userInput) {
 			case 1:
-				match.outputAllMatches(conn, tournament_id);
+				match.outputAllMatchesFromTournament(conn, tournament_id);
 				System.out.println("Which match's date would you like to change? [SELECT BY MATCH ID]");
 				modifyMatchTimeInput = input.nextInt();
 				modifyTime = time.setTime();
@@ -218,7 +221,7 @@ public class Tournament {
 				}
 				break;
 			case 2:
-				participantsNum = team.getNumOfTeams(conn, tournament_id);
+				participantsNum = team.getTeamCount(conn, tournament_id);
 				try {
 					if(sportType.equals("Team")){
 						System.out.println("Currently this tournament has " + participantsNum + " teams.");
@@ -290,9 +293,9 @@ public class Tournament {
 		tournament_id = returnTournamentID(conn, tournament_name);
 		sportType = returnTournamentSport(conn, tournament_id);
 		tournament_status = getTournament_status(conn, tournament_name);
-		teamCount = team.getNumOfTeams(conn, tournament_id);
+		teamCount = team.getTeamCount(conn, tournament_id);
 		arrTeams = new String[teamCount];
-		arrTeams = team.getAllTeams(conn, tournament_id);
+		arrTeams = team.getAllNames(conn, tournament_id);
 		int startInput = 0;
 
 
@@ -303,7 +306,7 @@ public class Tournament {
 		if ((!tournament_status.equals("Completed")) && (!tournament_status.equals("In Progress"))) {
 			System.out.println("There are currently " + teamCount + " teams in this tournament...");
 			System.out.println("Here are the current matches scheduled:");
-			match.outputAllMatches(conn, tournament_id);
+			match.outputAllMatchesFromTournament(conn, tournament_id);
 			System.out.println("Would you like to officially start this tournament now? [Changes status to \"In Progress]\"\nSubmit 1 for yes or 2 for no");
 			System.out.println("WARNING! -- If you revert tournament state back to Pending any match results or medals assigned will be permanently deleted."); // This doesn't actually work yet lol
 			startInput = input.nextInt();
@@ -317,11 +320,15 @@ public class Tournament {
 				System.out.println("Tournament will remain in " + tournament_status + " status...");
 			}
 		}  else if (tournament_status.equals("In Progress")) {
-			match.outputAllMatches(conn, tournament_id);
+			match.outputAllMatchesFromTournament(conn, tournament_id);
 			System.out.println("Which match would you like to start now? [Select by ID]");
 			startInput = input.nextInt();
 			match.outputExactMatch(conn, startInput);
-			System.out.println("Submit the score for ")
+			System.out.print("Submit the score for team A:  ");
+			submitScoreA = input.nextInt();
+			System.out.print("Submit the score for team B:  ");
+			match.setMatchScores(conn, startInput, submitScoreA, submitScoreB);
+
 		} else {
 			System.out.println(tournamentName + " has already concluded and cannot be played, would you like to output the results instead?");
 		}
@@ -480,13 +487,13 @@ public class Tournament {
   }
 
     public void results(Connect conn, int tournamentID){
-    	int matchID = match.returnMatchID(conn, tournamentID);
+    	//int matchID = match.getMatchID(conn, tournamentID);
     	String winner_A_name = new String();
     	String winner_B_name = new String();
     	try {
     		String query = "SELECT winner_a_of, winner_b_of FROM olympics.Match_Knockout WHERE match_id = ?";
     		PreparedStatement pstmt = conn.getConn().prepareStatement(query);
-    		pstmt.setInt(1, matchID);
+    		//pstmt.setInt(1, matchID);
     		ResultSet rs = pstmt.executeQuery();
     		while(rs.next()) {
     			int winnerA = rs.getInt("winner_a_of");
@@ -506,7 +513,7 @@ public class Tournament {
     public void displayResults(Connect conn, String tournament_name) {
     	//local members
 		int tournamentID = returnTournamentID(conn, tournament_name);
-		int matchID = match.returnMatchID(conn, tournamentID);
+		//int matchID = match.getMatchID(conn, tournamentID);
 		int teamA = 0;
 		int teamB = 0;
 		
@@ -514,7 +521,7 @@ public class Tournament {
 		try {
 			String query = "SELECT team_a_id, team_b_id FROM olympics.Match_Round WHERE match_id = ?";
 			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
-			pstmt.setInt(1, matchID);
+			//pstmt.setInt(1, matchID);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
 				teamA = rs.getInt("team_a_id");
