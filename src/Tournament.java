@@ -498,8 +498,8 @@ public class Tournament {
     		while(rs.next()) {
     			int winnerA = rs.getInt("winner_a_of");
     			int winnerB = rs.getInt("winner_b_of");
-    			winner_A_name = team.returnTeamName(conn, winnerA, tournamentID);
-    			winner_B_name = team.returnTeamName(conn, winnerB, tournamentID);
+    			winner_A_name = team.getTeamName(conn, winnerA, tournamentID);
+    			winner_B_name = team.getTeamName(conn, winnerB, tournamentID);
     			//print winner
     			System.out.println("Winner A: " + winner_A_name);
     			System.out.println("Winner B: " + winner_B_name);
@@ -533,8 +533,8 @@ public class Tournament {
 		}
 		
 		//get team names
-		String team_A_name = team.returnTeamName(conn, teamA, tournamentID);
-		String team_B_name = team.returnTeamName(conn, teamB, tournamentID);
+		String team_A_name = team.getTeamName(conn, teamA, tournamentID);
+		String team_B_name = team.getTeamName(conn, teamB, tournamentID);
 		
 		//get details of the match and display them
     	try {

@@ -39,7 +39,7 @@ public class Match {
             validation = false;
         }
         return validation;
-    } // Completed
+    } // Completed -- Tested & Confirmed!
     // creates a match from scratch
 
     public void setMatchScores(Connect conn, int id_match, int a_score, int b_score){
@@ -261,7 +261,7 @@ public class Match {
         } catch (Exception e) {
             System.out.println("SQL exception occurred: " + e);
         }
-    } // Completed -- May be deleted in final project
+    } // Completed -- Do not Test, ignore...
     // Outputs full details of a match
 
     public int getMatchCount(Connect conn, int tournamentID) {
@@ -279,7 +279,7 @@ public class Match {
             System.out.println("SQL exeception occurred" + e);
         }
         return matchCOUNT;
-    } // Completed -- Tested!
+    } // Completed -- Tested & Confirmed!
     // Returns how many matches are currently scheduled in a specific tournament
 
 
