@@ -32,7 +32,7 @@ public class matchRound {
         } catch (Exception ex) {
             System.out.println("ERROR: " + ex.getMessage());
         }
-    } // Completed -- Needs Testing
+    } // Completed -- Tested & Verified
     //Sets all values in a Match_Round Table
 
     public int getMatchRoundID(Connect conn, int a_team, int b_team) {

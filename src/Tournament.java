@@ -57,6 +57,8 @@ public class Tournament {
 	private Participants players;
 	private Team team;
 	private Match match;
+	private matchRound matchround;
+	private matchKnockout matchknockout;
 	List<Team> Arrteams;
 	Team gold;
 	Team silver;
@@ -73,6 +75,8 @@ public class Tournament {
 		time = new Time();
 		players = new Participants();
 		match = new Match();
+		matchround = new matchRound();
+		matchknockout = new matchKnockout();
 		input = new Scanner(System.in);
 		random = new Random();
 
@@ -149,7 +153,7 @@ public class Tournament {
 				return;
 			}
 		} else if (sportType.equals("Individual")){
-			System.out.println("How many players will be in this tournament? -- Must be an even amount between " +  MIN_TEAMS + " and " + MAX_TEAMS);
+			System.out.println("How many players will be in this tournament? -- Must choose either: 4, 8, 16, 32, or 64  ");
 			playerCount = input.nextInt();
 			if (certifyTeamCount(playerCount)) {
 				players.listParticipants(conn);
@@ -160,6 +164,8 @@ public class Tournament {
 						playersArr[i] = input.nextInt();
 						player_id = random.nextInt(9999);
 						InvidValidation = team.createTeamTable(conn, player_id, players.getPlayerName(playersArr[i], conn), tournament_id);
+						if (!InvidValidation)
+							System.out.println("Unable to use that player, please select a new one.");
 					} while (!InvidValidation);
 				}
 			} else {
@@ -173,10 +179,10 @@ public class Tournament {
 		System.out.println("****************************************************");
 		System.out.println("************* Match/Bracket Menu *************");
 		System.out.println("Please select which two teams will face each other: ");
-		team.outputAllTeams(conn, tournament_id);
 		boolean dupeCheck;
 		boolean id_verify;
 		for (int i = 0; i < (totalTeamAmount / 2); i++){
+			team.outputAllTeams(conn, tournament_id);
 			System.out.print("Team_A:  ");
 			teamOne = input.nextInt();
 			dupeCheck = match.preventDuplicate(conn, tournament_id, teamOne);
@@ -198,6 +204,35 @@ public class Tournament {
 			time = new Time();
 			matchTime = time.setTime();
 			match.createMatch(conn, tournament_id, teamOne, teamTwo, matchTime, "Pending");
+			matchround.setMatchRound(conn, match.getMatchID(conn, tournament_id,  teamOne, teamTwo), teamOne, teamTwo);
+		}
+		for (int i = 0; i < (totalTeamAmount / 2); i++){
+			if ((totalTeamAmount / 2) == 2) {
+				System.out.println("Please set the time for the Finals: ");
+				matchTime = time.setTime();
+				match.createIncompleteMatch(conn, tournament_id, matchTime, "Incomplete");
+				totalTeamAmount /= totalTeamAmount;
+			} else if ((totalTeamAmount / 2) == 4) {
+				System.out.println("Please set the time for the Semi-Finals: ");
+				matchTime = time.setTime();
+				match.createIncompleteMatch(conn, tournament_id, matchTime, "Incomplete");
+				totalTeamAmount /= totalTeamAmount;
+			} else if ((totalTeamAmount / 2) == 8) {
+				System.out.println("Please set the time for the Quarter-Finals: ");
+				matchTime = time.setTime();
+				match.createIncompleteMatch(conn, tournament_id, matchTime, "Incomplete");
+				totalTeamAmount /= totalTeamAmount;
+			} else if ((totalTeamAmount / 2) == 16) {
+				System.out.println("Please set the time for Round of 16: ");
+				matchTime = time.setTime();
+				match.createIncompleteMatch(conn, tournament_id, matchTime, "Incomplete");
+				totalTeamAmount /= totalTeamAmount;
+			} else if ((totalTeamAmount / 2) == 32) {
+				System.out.println("Please set the time for Round of 32: ");
+				matchTime = time.setTime();
+				match.createIncompleteMatch(conn, tournament_id, matchTime, "Incomplete");
+				totalTeamAmount /= totalTeamAmount;
+			}
 		}
 		setTournamentStatus(conn, tournament_id, "Pending");
 		System.out.println("Tournament successfully created!!!");
@@ -335,6 +370,10 @@ public class Tournament {
 				System.out.println("Which match would you like to start now? [Select by ID]");
 				startInput = input.nextInt();
 				match.outputExactMatch(conn, startInput);
+				System.out.print("Submit the score for team A:  ");
+				submitScoreA = input.nextInt();
+				System.out.print("Submit the score for team B:  ");
+				match.setMatchScores(conn, startInput, submitScoreA, submitScoreB);
 
 			} else if (startInput == 2) {
 				System.out.println("Tournament will remain in " + tournament_status + " status...");
@@ -491,7 +530,7 @@ public class Tournament {
 		try {
 			Statement stmt = conn.getConn().createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM olympics.Tournament");
-			System.out.printf("%-7s%-15s%-15s\n", "ID", "Name", "Type", "Status");
+			System.out.printf("%-7s%-25s%-25s\n", "ID", "Name", "Type", "Status");
 
 			while (rs.next()) {
 				int id = rs.getInt("id");
@@ -499,7 +538,7 @@ public class Tournament {
 				String type = rs.getString("tournament_type");
 				String state = rs.getString("status");
 
-				System.out.printf("%-7d%-15s%-15s\n", id, name, type, state);
+				System.out.printf("%-7d%-25s%-25s\n", id, name, type, state);
 			}
 		} catch(SQLException e) {
 			System.out.println("SQL exception occurred" + e);

@@ -9,6 +9,7 @@ public class Match {
 
     //private members
     private int[] matchIDs;
+    private int matchID;
     private int tournamentID, teamAID, teamBID;
     private Timestamp dateTime;
     private String state;
@@ -18,6 +19,7 @@ public class Match {
     }
 
     public void init() {
+        matchID = 0;
         matchIDs = new int[0];
         tournamentID = 0;
         teamAID = 0;
@@ -43,6 +45,21 @@ public class Match {
         }
     } // Completed -- Tested & Confirmed!
     // creates a match from scratch
+
+    public void createIncompleteMatch(Connect conn, int id_tournament, Timestamp gameTime, String state) {
+        try {
+            String query = "INSERT INTO olympics.`Match`" + "(tournament_id, date, status) VALUES" + "(?, ?, ?)";
+            PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+
+            pstmt.setInt(1, id_tournament);
+            pstmt.setTimestamp(2, gameTime);
+            pstmt.setString(3, state);
+            pstmt.executeUpdate();
+
+        } catch (Exception ex) {
+            System.out.println("ERROR: " + ex.getMessage());
+        }
+    }
 
     public void setMatchScores(Connect conn, int id_match, int a_score, int b_score){
         try {
@@ -145,6 +162,24 @@ public class Match {
         return winner;
     } // WIP 80% -- Tested & Confirmed
     // Checks the match scores to determine who the winner is and returns the ID of the winner.
+
+    public int getMatchID(Connect conn, int id_tournament, int id_teamA, int id_teamB){
+        try {
+            String query = "SELECT id FROM olympics.`Match` WHERE tournament_id = ? && team_a_id = ? && team_b_id = ?";
+            PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+            pstmt.setInt(1, id_tournament);
+            pstmt.setInt(2, id_teamA);
+            pstmt.setInt(3, id_teamB);
+            ResultSet rs = pstmt.executeQuery();
+
+            while(rs.next()) {
+                matchID = rs.getInt("id");
+            }
+        } catch (Exception ex) {
+            System.out.println("ERROR: " + ex.getMessage());
+        }
+        return matchID;
+    }
 
     public int[] getMatchIDs(Connect conn, int tournamentID) {
         matchIDs = new int[getMatchCount(conn, tournamentID)];
@@ -297,10 +332,10 @@ public class Match {
         int matchAmount = getMatchCount(conn, tournamentID);
         int[] matchID = new int[matchAmount], team_aID = new int[matchAmount], team_bID = new int[matchAmount];
         int wLoop = 0;
-        String[] teamA_name = new String[matchAmount], teamB_name = new String[matchAmount];
+        String[] teamA_name = new String[matchAmount], teamB_name = new String[matchAmount], state = new String[matchAmount];
         Timestamp[] matchTime = new Timestamp[matchAmount];
         try {
-            String query = "SELECT id, date, team_a_id, team_b_id FROM olympics.Match WHERE tournament_id = ?";
+            String query = "SELECT id, date, team_a_id, team_b_id, status FROM olympics.Match WHERE tournament_id = ?";
             String teamNameQuery = "SELECT team_name FROM olympics.Team WHERE id = ?";
 
             PreparedStatement pstmt = conn.getConn().prepareStatement(query);
@@ -311,6 +346,7 @@ public class Match {
                 matchTime[wLoop] = rs.getTimestamp("date");
                 team_aID[wLoop] = rs.getInt("team_a_id");
                 team_bID[wLoop] = rs.getInt("team_b_id");
+                state[wLoop] = rs.getString("Status");
                 wLoop++;
             }
 
@@ -327,10 +363,10 @@ public class Match {
                     teamB_name[i] = rs.getString("team_name");
             }
 
-            System.out.printf("%-7s%-25s%-7s%-20s%-7s%-20s\n", "ID", "Date", "ID", "Team_A", "ID", "Team_B");
+            System.out.printf("%-7s%-25s%-7s%-20s%-7s%-20s%-20s\n", "ID", "Date", "ID", "Team_A", "ID", "Team_B", "Status");
 
             for (int i = 0; i < matchAmount; i++) {
-                System.out.printf("%-7s%-25s%-7d%-20s%-7d%-20s\n", matchID[i], matchTime[i], team_aID[i], teamA_name[i], team_bID[i], teamB_name[i]);
+                System.out.printf("%-7s%-25s%-7d%-20s%-7d%-20s%-20s\n", matchID[i], matchTime[i], team_aID[i], teamA_name[i], team_bID[i], teamB_name[i], state[i]);
             }
 
         } catch (Exception e) {
