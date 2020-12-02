@@ -1,10 +1,9 @@
 import Database.Connect;
-import com.mysql.cj.protocol.Resultset;
 
+import javax.xml.transform.Result;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class Team{
 	//private members
@@ -26,7 +25,10 @@ public class Team{
 
 	public boolean createTeamTable(Connect conn, int id, String team_name, int tournament_id) {
 		boolean validation;
+		if (preventDuplicate(conn, team_name, tournament_id))
+			return false;
 		try {
+
 			String query = "INSERT INTO olympics.Team" + "(id, team_name, tournament_id) VALUES" + "(?, ?, ?);";
 			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
 
@@ -41,7 +43,7 @@ public class Team{
 			validation = false;
 		}
 		return validation;
-	}
+	} // Completed -- Tested & Confirmed!
 
 	public void setTeamName(Connect conn, int id_team, String name) {
 		try {
@@ -55,8 +57,32 @@ public class Team{
 		} catch (Exception ex) {
 			System.out.println("ERROR: " + ex.getMessage());
 		}
-	} // Completed -- Needs Testing
+	} // Completed -- Tested & Confirmed!
 	// Changes the team name if need be.
+
+	public void deleteTeam(Connect conn, int id_team){
+		try {
+			String query = "DELETE FROM olympics.Team WHERE id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+
+			pstmt.setInt(1, id_team);
+			pstmt.executeUpdate();
+		} catch (Exception ex) {
+			System.out.println("ERROR: " + ex.getMessage());
+		}
+	}
+
+	public void deleteAllTeams(Connect conn, int id_tournament){
+		try {
+			String query = "DELETE FROM olympics.Team WHERE tournament_id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+
+			pstmt.setInt(1, id_tournament);
+			pstmt.executeUpdate();
+		} catch (Exception ex) {
+			System.out.println("ERROR: " + ex.getMessage());
+		}
+	}
 
 	public int getTeamID(Connect conn, String name_team) {
 		init();
@@ -74,7 +100,7 @@ public class Team{
 			System.out.println("SQL exception occurred" + e);
 		}
 		return teamID;
-	} // Completed -- Needs Testing
+	} // Completed -- Tested & Confirmed!
 	// Returns an ID from just one team using a passed string variable
 
 	public String getTeamName(Connect conn, int team_id) {
@@ -93,16 +119,16 @@ public class Team{
 			System.out.println("SQL exception occurred" + e);
 		}
 		return teamName;
-	} // Completed -- Needs Testing
+	} // Completed -- Tested & Confirmed!
 	// Returns a Name from just one tean using a passed int variable
 
-	public String getTeamName(Connect conn, int teamID, int tournamentID) {
-		String name = new String();
+	public String getTeamName(Connect conn, int teamID, int id_tournament) {
+		String name = "";
 		try {
 			String query = "SELECT team_name FROM olympics.Team WHERE id = ? && tournament_id = ?";
 			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
 			pstmt.setInt(1, teamID);
-			pstmt.setInt(2, tournamentID);
+			pstmt.setInt(2, id_tournament);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
 				name = rs.getString("team_name");
@@ -112,7 +138,7 @@ public class Team{
 			System.out.println("SQL exception occured" + e);
 		}
 		return name;
-	} // Completed -- Needs Testing
+	} // Completed -- Tested & Confirmed!
 	// Overloaded Function accepting an additional parameter which is the tournament ID
 
 	public int getTournamentID(Connect conn, int team_id) {
@@ -124,14 +150,14 @@ public class Team{
 			ResultSet rs = pstmt.executeQuery();
 
 			while (rs.next()) {
-				tournamentID = rs.getInt("id");
+				tournamentID = rs.getInt("tournament_id");
 			}
 			rs.close();
 		} catch (SQLException e) {
 			System.out.println("SQL exception occurred" + e);
 		}
 		return tournamentID;
-	} // Completed -- Needs Testing
+	} // Completed -- Tested & Confirmed!
 	// Returns the tournament ID based off the team_id that's passed.
 
 	public int[] getTeamIDs(Connect conn, int id_tournament) {
@@ -139,22 +165,21 @@ public class Team{
 		int[] teams = new int[count];
 
 		try {
-			String sql = "SELECT team_name FROM olympics.Team WHERE id = ?";
+			String sql = "SELECT id FROM olympics.Team WHERE tournament_id = ?";
 			PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
-
-			for (int i = 0; i < count; i++) {
-				pstmt.setInt(1, id_tournament);
-				ResultSet rs = pstmt.executeQuery();
-				while (rs.next()) {
-					teams[i] = rs.getInt("id");
-				}
-				rs.close();
+			int i = 0;
+			pstmt.setInt(1, id_tournament);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				teams[i] = rs.getInt("id");
+				i++;
 			}
+			rs.close();
 		} catch (SQLException e) {
 			System.out.println("SQL exception occurred" + e);
 		}
 		return teams;
-	} // Completed -- Needs Testing
+	} // Completed -- Tested & Confirmed!
 	// Returns all the team IDS associated with the tournament ID passed
 
 	public String[] getAllNames(Connect conn, int id_tournament) {
@@ -163,21 +188,59 @@ public class Team{
 		try {
 			String sql = "SELECT team_name FROM olympics.Team WHERE tournament_id = ?";
 			PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
-
-		for (int i = 0; i < count; i++) {
-			pstmt.setInt(1, tournamentID);
+			pstmt.setInt(1, id_tournament);
 			ResultSet rs = pstmt.executeQuery();
+			int i=0;
 			while (rs.next()) {
 				listOfTeam[i] = rs.getString("team_name");
+				i++;
 			}
 			rs.close();
-		}
 		} catch (SQLException e) {
 			System.out.println("SQL exception occurred" + e);
 		}
 		return listOfTeam;
-	} // Completed -- Needs Testing
+	} // Completed -- Tested & Confirmed!
 	// Returns all the team Names associated with the tournament ID passed
+
+	public boolean preventDuplicate(Connect conn, String name, int id_tournament) {
+		init();
+		try {
+			String sql = "SELECT team_name FROM olympics.Team WHERE team_name = ? && tournament_id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
+			pstmt.setString(1, name);
+			pstmt.setInt(2, id_tournament);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				teamName = rs.getString("team_name");
+				if (name.equals(teamName))
+					return true;
+			}
+		} catch (SQLException e) {
+			System.out.println("SQL exception occurred" + e);
+		}
+		return false;
+	}
+
+	public boolean verifyID(Connect conn, int ID, int id_tournament) {
+		init();
+		try {
+			String sql = "SELECT id FROM olympics.Team WHERE tournament_id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
+
+			pstmt.setInt(1, id_tournament);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				teamID = rs.getInt("id");
+				if (ID == teamID)
+					return true;
+			}
+
+		} catch (SQLException e) {
+			System.out.println("SQL Exception occurred." + e);
+		}
+		return false;
+	}
 
 	public void outputAllTeams(Connect conn, int tournamentID) {
 		try {
@@ -196,7 +259,7 @@ public class Team{
 		} catch (SQLException e) {
 			System.out.println("SQL exception occurred" + e);
 		}
-	} // Completed -- Needs Testing
+	} // Completed -- Tested & Confirmed!
 	// Outputs all the Teams that are associated with the tournament ID passed
 
 	public int getTeamCount(Connect conn, int tournamentID){

@@ -1,17 +1,9 @@
 import Database.Connect;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class OlympicGames {
-    // Private variables
-    private static boolean validation = false;
     private static boolean menuActive = true;
-    private static String modify = null;
-    private static String tourneyStatus = null;
-    private static int menu2Input = 0;
-    private static String playInput = null;
 
     public static void main(String[] args) throws IOException {
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -23,12 +15,12 @@ public class OlympicGames {
         MedalsWon medal = new MedalsWon();
         Sports sport = new Sports();
         Connect database = new Connect();
-        Match match = new Match();
         Team team = new Team();
-        Time time = new Time();
+
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        validation = database.startConn(); // Checks if the user login was successful.
+        // Private variables
+        boolean validation = database.startConn(); // Checks if the user login was successful.
 
         printMenu(); // Prints the menu before while loop
         while ((getMenuActive()) && (validation)) {
@@ -41,17 +33,17 @@ public class OlympicGames {
                 case 1 -> tournaments.createTournament(database);
                 case 2 -> {
                     tournaments.viewTournamentTable(database);
-                    System.out.println("Which tournament do you want to view and/or modify? (Type the name)");
+                    System.out.println("Which tournament do you want to view and/or modify? (Enter the ID)");
                     System.out.println("***Only Tournaments in [Pending] status can be modified!+++");
-                    modify = input.next();
+                    int modify = input.nextInt();
 
-                    tourneyStatus = tournaments.getTournament_status(database, modify);
+                    String tourneyStatus = tournaments.getTournament_status(database, modify);
 
                     if (tourneyStatus.equals("Pending")) {
                         System.out.println("+++ 1. View Tournament");
                         System.out.println("+++ 2. Modify Tournament");
                         System.out.println("Please select to view or modify the tournament.");
-                        menu2Input = input.nextInt();
+                        int menu2Input = input.nextInt();
                         switch (menu2Input) {
                             case 1 -> tournaments.viewTournament(database, modify);
                             case 2 -> tournaments.modifyTournament(database, modify);
@@ -68,7 +60,7 @@ public class OlympicGames {
                     deleteValidation = tournaments.deleteTournament(database, delete_id);
                     if (deleteValidation) {
                         System.out.println("Tournament and all teams playing in tournament was successfully deleted.");
-                    } else if (!deleteValidation) {
+                    } else {
                         System.out.println("Tournament deletion failed! Please try again and check your inputs.");
                     }
                 }
@@ -78,9 +70,12 @@ public class OlympicGames {
                 case 7 -> medal.displayLeaderBoard(database);
                 case 8 -> {
                     tournaments.viewTournamentTable(database);
-                    System.out.println("Select which tournament you want to play [String]");
-                    playInput = input.next();
-                    tournaments.playTournament(database, playInput);
+                    System.out.println("Select which tournament you want to play [ID]");
+                    int playInput = input.nextInt();
+                    if (tournaments.verifyTournament(database, playInput)) {
+                        tournaments.playTournament(database, playInput);
+                    } else
+                        System.out.println("Sorry, tournament #" + playInput + " cannot be played due to it being incomplete or it was already completed.");
                 }
                 case 9 -> printMenu();
                 case 0 -> {
@@ -88,7 +83,7 @@ public class OlympicGames {
                     database.endConn();
                     setMenuActive(false);
                 }
-                case 11 -> System.out.println(match.getTournamentIDFromMatch(database, 13));
+                case 11 -> System.out.println(team.getTournamentID(database, 7665));
             }
         }
         if (!validation)

@@ -1,4 +1,6 @@
 import Database.Connect;
+
+import javax.xml.transform.Result;
 import java.sql.*;
 
 
@@ -7,8 +9,9 @@ public class Match {
 
     //private members
     private int[] matchIDs;
-    private String teamName;
-    private int tournamentID;
+    private int tournamentID, teamAID, teamBID;
+    private Timestamp dateTime;
+    private String state;
 
     Match(){
         init();
@@ -16,12 +19,14 @@ public class Match {
 
     public void init() {
         matchIDs = new int[0];
-        teamName = null;
         tournamentID = 0;
+        teamAID = 0;
+        teamBID = 0;
+        dateTime = null;
+        state = "";
     }
 
-    public boolean createMatch(Connect conn, int id_tournament, int id_teamA, int id_teamB, Timestamp gameTime, String state) {
-        boolean validation = false;
+    public void createMatch(Connect conn, int id_tournament, int id_teamA, int id_teamB, Timestamp gameTime, String state) {
         try {
             String query = "INSERT INTO olympics.Match" + "(tournament_id, team_a_id, team_b_id, date, status) VALUES" + "(?, ?, ?, ?, ?);";
             PreparedStatement pstmt = conn.getConn().prepareStatement(query);
@@ -33,12 +38,9 @@ public class Match {
             pstmt.setString(5, state);
             pstmt.executeUpdate();
 
-            validation = true;
         } catch (Exception ex) {
             System.out.println("ERROR: " + ex.getMessage());
-            validation = false;
         }
-        return validation;
     } // Completed -- Tested & Confirmed!
     // creates a match from scratch
 
@@ -55,7 +57,7 @@ public class Match {
         } catch (Exception ex) {
             System.out.println("ERROR: " + ex.getMessage());
         }
-    } // Completed -- Needs testing
+    } // Completed -- Tested & Confirmed
     // Sets the scores the user submitted to the table
 
     public void setDate(Connect conn, int id_match, Timestamp dateTime) {
@@ -70,7 +72,7 @@ public class Match {
         } catch (Exception ex) {
             System.out.println("ERROR: " + ex.getMessage());
         }
-    } // Completed -- Needs testing
+    } // Completed -- Tested & Confirmed
     // Sets the Timestamp the user submitted
 
     public void setMatchStatus(Connect conn, int id, String state) {
@@ -85,8 +87,32 @@ public class Match {
         } catch (Exception ex) {
             System.out.println("ERROR: " + ex.getMessage());
         }
-    } // Completed -- Needs testing
+    } // Completed -- Tested & Confirmed
     // Changes match status
+
+    public void deleteMatch(Connect conn, int id_match) {
+        try {
+            String query = "DELETE FROM olympics.Team WHERE id = ?";
+            PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+
+            pstmt.setInt(1, id_match);
+            pstmt.executeUpdate();
+        } catch (Exception ex) {
+            System.out.println("ERROR: "  + ex.getMessage());
+        }
+    }
+
+    public void deleteAllMatches(Connect conn, int id_tournament){
+        try {
+            String query = "DELETE FROM olympics.Team WHERE tournament_id = ?";
+            PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+
+            pstmt.setInt(1, id_tournament);
+            pstmt.executeUpdate();
+        } catch (Exception ex) {
+            System.out.println("ERROR: " + ex.getMessage());
+        }
+    }
 
     public int determineWinner(Connect conn, int id_match) {
         int aTeam = 0, bTeam = 0, a_id = 0, b_id = 0;
@@ -117,7 +143,7 @@ public class Match {
             System.out.println("ERROR: " + ex.getMessage());
         }
         return winner;
-    } // WIP 80% -- Needs testing
+    } // WIP 80% -- Tested & Confirmed
     // Checks the match scores to determine who the winner is and returns the ID of the winner.
 
     public int[] getMatchIDs(Connect conn, int tournamentID) {
@@ -137,11 +163,11 @@ public class Match {
             System.out.println("SQL exception occurred: " + e);
         }
         return matchIDs;
-    } // Completed -- Tested!
+    } // Completed -- Tested & Confirmed
     // Returns an int array of all the Match IDs associated with a tournament
 
     public int getTournamentIDFromMatch(Connect conn, int matchID) {
-        tournamentID = 0;
+        init();
         try {
             String query = "SELECT tournament_id FROM olympics.Match WHERE id = ?";
             PreparedStatement pstmt = conn.getConn().prepareStatement(query);
@@ -155,8 +181,117 @@ public class Match {
             System.out.println("SQL Exception occurred: " + e);
         }
         return tournamentID;
-    } // Completed -- Tested!
+    } // Completed -- Tested & Confirmed
     // Returns the tournament associated with a passed MatchID
+
+    public Timestamp getDate(Connect conn, int matchID){
+        init();
+        try {
+            String query = "SELECT date FROM olympics.`Match` WHERE id = ?";
+            PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+            pstmt.setInt(1, matchID);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()) {
+                dateTime = rs.getTimestamp("date");
+            }
+        } catch (Exception e) {
+            System.out.println("SQL Exception occurred: " + e);
+        }
+        return dateTime;
+    } // Completed -- Needs Testing
+    // Returns the date of the match
+
+    public String getStatus(Connect conn, int matchID){
+        init();
+        try {
+            String query = "SELECT status FROM olympics.`Match` WHERE id = ?";
+            PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+            pstmt.setInt(1, matchID);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()) {
+                state = rs.getString("status");
+            }
+        } catch (Exception e) {
+            System.out.println("SQL Exception occurred: " + e);
+        }
+        return state;
+    } // Completed -- Needs Testing
+    // Returns the status of the match
+
+    public int getTeam_a_id(Connect conn, int matchID){
+        init();
+        try {
+            String query = "SELECT team_a_id FROM olympics.`Match` WHERE id = ?";
+            PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+            pstmt.setInt(1, matchID);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()) {
+                teamAID = rs.getInt("team_a_id");
+            }
+        } catch (Exception e) {
+            System.out.println("SQL Exception occurred: " + e);
+        }
+        return teamAID;
+    } // Completed
+    // Returns the ID of team A
+
+    public int getTeam_b_id(Connect conn, int matchID){
+        init();
+        try {
+            String query = "SELECT team_b_id FROM olympics.`Match` WHERE id = ?";
+            PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+            pstmt.setInt(1, matchID);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()) {
+                teamBID = rs.getInt("team_b_id");
+            }
+        } catch (Exception e) {
+            System.out.println("SQL Exception occurred: " + e);
+        }
+        return teamBID;
+    } // Completed
+    // Returns the ID of team B
+
+    public int getMatchCount(Connect conn, int tournamentID) {
+        init();
+        int matchCOUNT = 0;
+        try {
+            String sql = "SELECT COUNT(tournament_id) FROM olympics.Match WHERE tournament_id = ?";
+            PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
+            pstmt.setInt(1, tournamentID);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                matchCOUNT = rs.getInt("COUNT(tournament_id)");
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL exeception occurred" + e);
+        }
+        return matchCOUNT;
+    } // Completed -- Tested & Confirmed!
+    // Returns how many matches are currently scheduled in a specific tournament
+
+    public boolean preventDuplicate(Connect conn, int tournamentID, int duplicateID) {
+        init();
+        try {
+            String sql = "SELECT team_a_id, team_b_id FROM olympics.`Match` WHERE tournament_id = ?";
+            PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
+            pstmt.setInt(1, tournamentID);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                teamAID = rs.getInt("team_a_id");
+                teamBID = rs.getInt("team_b_id");
+                if ((duplicateID == teamAID) || (duplicateID == teamBID)){
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL exception occurred" + e);
+        }
+        return false;
+    } // Completed -- Testing...
+    // Checks if the user submitted a duplicate team that is another in a different match
+    // This function is only used during match creation & modification
 
     public void outputAllMatchesFromTournament(Connect conn, int tournamentID) {
         int matchAmount = getMatchCount(conn, tournamentID);
@@ -201,7 +336,7 @@ public class Match {
         } catch (Exception e) {
             System.out.println("SQL exception occurred: " + e);
         }
-    } // Completed
+    } // Completed  -- Tested & Confirmed
     // Outputs all matches in a tournament based on passed tournamentID value
 
     public void outputExactMatch(Connect conn, int matchID) {
@@ -264,23 +399,7 @@ public class Match {
     } // Completed -- Do not Test, ignore...
     // Outputs full details of a match
 
-    public int getMatchCount(Connect conn, int tournamentID) {
-        int matchCOUNT = 0;
-        try {
-            String sql = "SELECT COUNT(tournament_id) FROM olympics.Match WHERE tournament_id = ?";
-            PreparedStatement pstmt = conn.getConn().prepareStatement(sql);
-            pstmt.setInt(1, tournamentID);
-            ResultSet rs = pstmt.executeQuery();
 
-            while (rs.next()) {
-                matchCOUNT = rs.getInt("COUNT(tournament_id)");
-            }
-        } catch (SQLException e) {
-            System.out.println("SQL exeception occurred" + e);
-        }
-        return matchCOUNT;
-    } // Completed -- Tested & Confirmed!
-    // Returns how many matches are currently scheduled in a specific tournament
 
 
 

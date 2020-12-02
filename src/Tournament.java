@@ -2,9 +2,7 @@ import Database.Connect;
 import java.io.IOException;
 import java.sql.*;
 import java.util.Scanner;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Collections;
 import java.util.Random;
 
 public class Tournament {
@@ -38,6 +36,7 @@ public class Tournament {
 	private int submitScoreA, submitScoreB;
 	int[] playersArr;
 	int[] teams;
+	int[] checkParticipantCap;
 	//--Boolean
 	private Boolean TourValidation;
 	private Boolean InvidValidation;
@@ -98,6 +97,7 @@ public class Tournament {
 		modifyMatchTimeInput = 0;
 		submitScoreA = 0;
 		submitScoreB = 0;
+		checkParticipantCap = new int[]{4, 8, 16, 32, 64};
 
 		TourValidation = false;
 		InvidValidation = false;
@@ -117,7 +117,7 @@ public class Tournament {
 		System.out.print("Tournament Name: ");
 		tournament_name = input.nextLine();
 		sport.outputAllSports(conn);
-		System.out.println("Which sport will be played in this tournament? ");
+		System.out.print("Which sport will be played in this tournament?  ");
 		tournament_sport = input.nextLine();
 
 		do {
@@ -128,19 +128,21 @@ public class Tournament {
 		SportID = sport.getSportID(conn, tournament_sport);
 		sportType = sport.getSportType(SportID, conn);
 		if (sportType.equals("Team")){
-			System.out.println("How many countries will be in this tournament? -- Must be an even amount between " +  MIN_TEAMS + " and " + MAX_TEAMS);
+			System.out.print("How many countries will be in this tournament? -- Must choose either: 4, 8, 16, 32, or 64  ");
 			teamCount = input.nextInt();
-			if ((teamCount >= MIN_TEAMS) && (teamCount <= MAX_TEAMS) && (teamCount % 2 == 0)) {
-			country.participatingCountries(conn);
-			System.out.println("Select " + teamCount + " countries by ID");
-			teams = new int[teamCount];
-			for (int i = 0; i < teamCount; i++) {
-				do {
-					teams[i] = input.nextInt();
-					team_id = random.nextInt(9999);
-					teamValidation = team.createTeamTable(conn, team_id, country.getCountries(teams[i], conn), tournament_id);
-				} while (!teamValidation);
-			}
+			if (certifyTeamCount(teamCount)) {
+				country.participatingCountries(conn);
+				System.out.println("Select " + teamCount + " countries by ID");
+				teams = new int[teamCount];
+				for (int i = 0; i < teamCount; i++) {
+					do {
+						teams[i] = input.nextInt();
+						team_id = random.nextInt(9999);
+						teamValidation = team.createTeamTable(conn, team_id, country.getCountries(teams[i], conn), tournament_id);
+						if (!teamValidation)
+							System.out.println("Unable to use that team, please select a new one.");
+					} while (!teamValidation);
+				}
 			} else {
 				System.out.println("teamCount is out of bounds!!! tournament creation stopped");
 				deleteTournament(conn, tournament_id);
@@ -149,7 +151,7 @@ public class Tournament {
 		} else if (sportType.equals("Individual")){
 			System.out.println("How many players will be in this tournament? -- Must be an even amount between " +  MIN_TEAMS + " and " + MAX_TEAMS);
 			playerCount = input.nextInt();
-			if ((playerCount >= MIN_TEAMS) && (playerCount <= MAX_TEAMS) && (playerCount % 2 == 0)) {
+			if (certifyTeamCount(playerCount)) {
 				players.listParticipants(conn);
 				System.out.println("Select " + playerCount + " players by ID");
 				playersArr = new int[playerCount];
@@ -172,19 +174,36 @@ public class Tournament {
 		System.out.println("************* Match/Bracket Menu *************");
 		System.out.println("Please select which two teams will face each other: ");
 		team.outputAllTeams(conn, tournament_id);
+		boolean dupeCheck;
+		boolean id_verify;
 		for (int i = 0; i < (totalTeamAmount / 2); i++){
 			System.out.print("Team_A:  ");
 			teamOne = input.nextInt();
+			dupeCheck = match.preventDuplicate(conn, tournament_id, teamOne);
+			id_verify = team.verifyID(conn, teamOne, tournament_id);
+			if (dupeCheck || !id_verify) {
+				i--;
+				System.out.println("Invalid team selection, please try again.");
+				continue;
+			}
 			System.out.print("Team_B:  ");
 			teamTwo = input.nextInt();
+			dupeCheck = match.preventDuplicate(conn, tournament_id, teamTwo);
+			id_verify = team.verifyID(conn, teamTwo, tournament_id);
+			if (dupeCheck || (teamTwo == teamOne) || !id_verify) {
+				i--;
+				System.out.println("Invalid team selection, please try again.");
+				continue;
+			}
 			time = new Time();
 			matchTime = time.setTime();
 			match.createMatch(conn, tournament_id, teamOne, teamTwo, matchTime, "Pending");
 		}
+		setTournamentStatus(conn, tournament_id, "Pending");
 		System.out.println("Tournament successfully created!!!");
 	}
 
-	public void modifyTournament(Connect conn, String tournament_name) {
+	public void modifyTournament(Connect conn, int tournamentID) {
 		init();
 
 		//new instances
@@ -195,8 +214,9 @@ public class Tournament {
 		country = new Countries();
 
 		//new members
-		tournament_id = returnTournamentID(conn, tournament_name);
-		tournament_sport = returnTournamentSport(conn, tournament_id);
+		tournament_name = getTournamentName(conn, tournamentID);
+		tournament_id = getTournamentID(conn, tournament_name);
+		tournament_sport = getTournamentSport(conn, tournament_id);
 		SportID = sport.getSportID(conn, tournament_sport);
 		sportType = sport.getSportType(SportID, conn);
 		boolean validation;
@@ -216,7 +236,7 @@ public class Tournament {
 				if (modifyTimeBool) {
 					System.out.println("Time was successfully modified on " + tournament_name +"!");
 				}
-				else if (!modifyTimeBool) {
+				else {
 					System.out.println("Time was unsuccessfully changed...");
 				}
 				break;
@@ -238,7 +258,7 @@ public class Tournament {
 									validation = team.createTeamTable(conn, team_id, country.getCountries(pickTeam[i], conn), tournament_id);
 								} while (!validation);
 							}
-							viewTournament(conn, tournament_name);
+							viewTournament(conn, tournament_id);
 						} else {
 							System.out.println("Unable to add " + addTeams + " teams to the tournament");
 						}
@@ -259,7 +279,7 @@ public class Tournament {
 									validation = team.createTeamTable(conn, player_id, players.getPlayerName(pickPlayer[i], conn), tournament_id);
 								} while (!validation);
 							}
-							viewTournament(conn, tournament_name);
+							viewTournament(conn, tournament_id);
 						} else {
 							System.out.println("Unable to add " + addPlayers + " players to the tournament");
 						}
@@ -279,7 +299,7 @@ public class Tournament {
 					pstmt2.setInt(2, tournament_id);
 					pstmt2.executeUpdate();
 
-					viewTournament(conn, tournament_name);
+					viewTournament(conn, tournament_id);
 				} catch (Exception e) {
 					System.out.println("SQL exception occured" + e);
 				}
@@ -287,12 +307,12 @@ public class Tournament {
 		}
 	}
 
-	public void playTournament(Connect conn, String tournamentName){
+	public void playTournament(Connect conn, int tournamentID){
 		init();
-		tournament_name = tournamentName;
-		tournament_id = returnTournamentID(conn, tournament_name);
-		sportType = returnTournamentSport(conn, tournament_id);
-		tournament_status = getTournament_status(conn, tournament_name);
+		tournament_name = getTournamentName(conn, tournamentID);
+		tournament_id = getTournamentID(conn, tournament_name);
+		sportType = getTournamentSport(conn, tournament_id);
+		tournament_status = getTournament_status(conn, tournament_id);
 		teamCount = team.getTeamCount(conn, tournament_id);
 		arrTeams = new String[teamCount];
 		arrTeams = team.getAllNames(conn, tournament_id);
@@ -303,7 +323,7 @@ public class Tournament {
 			System.out.println(arrTeams[i]);
 		}
 
-		if ((!tournament_status.equals("Completed")) && (!tournament_status.equals("In Progress"))) {
+		if (tournament_status.equals("Pending")) {
 			System.out.println("There are currently " + teamCount + " teams in this tournament...");
 			System.out.println("Here are the current matches scheduled:");
 			match.outputAllMatchesFromTournament(conn, tournament_id);
@@ -319,7 +339,7 @@ public class Tournament {
 			} else if (startInput == 2) {
 				System.out.println("Tournament will remain in " + tournament_status + " status...");
 			}
-		}  else if (tournament_status.equals("In Progress")) {
+		} else {
 			match.outputAllMatchesFromTournament(conn, tournament_id);
 			System.out.println("Which match would you like to start now? [Select by ID]");
 			startInput = input.nextInt();
@@ -328,10 +348,25 @@ public class Tournament {
 			submitScoreA = input.nextInt();
 			System.out.print("Submit the score for team B:  ");
 			match.setMatchScores(conn, startInput, submitScoreA, submitScoreB);
-
-		} else {
-			System.out.println(tournamentName + " has already concluded and cannot be played, would you like to output the results instead?");
 		}
+	}
+
+	public boolean deleteTournament(Connect conn, int tournament_id) {
+		init();
+		boolean validation;
+		try {
+			String query = "DELETE FROM olympics.Tournament WHERE id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+
+			pstmt.setInt(1, tournament_id);
+			pstmt.executeUpdate();
+
+			validation = true;
+		} catch (Exception ex) {
+			System.out.println("ERROR: " + ex.getMessage());
+			validation = false;
+		}
+		return validation;
 	}
 
 	public boolean createTournamentTable(Connect conn, int id, String t_name, String t_type) {
@@ -343,7 +378,7 @@ public class Tournament {
 			pstmt.setInt(1, id);
 			pstmt.setString(2, t_name);
 			pstmt.setString(3, t_type);
-			pstmt.setString(4, "Pending");
+			pstmt.setString(4, "Incomplete");
 			pstmt.executeUpdate();
 			validation = true;
 
@@ -354,7 +389,37 @@ public class Tournament {
 		return validation;
 	}
 
-	public int returnTournamentID(Connect conn, String tournament_name) {
+	public void setTournamentStatus(Connect conn, int tournamentID, String changeStatus) {
+		try {
+			String query = "UPDATE olympics.Tournament SET status = ? WHERE id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+
+			pstmt.setString(1, changeStatus);
+			pstmt.setInt(2, tournamentID);
+			pstmt.executeUpdate();
+		} catch (Exception e) {
+			System.out.println("SQL exception occurred " + e);
+		}
+	}
+
+	public String getTournament_status(Connect conn, int tournamentID){
+		String statusReturned = null;
+		try {
+			String query = "SELECT status FROM olympics.Tournament WHERE id = ?";
+			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
+			pstmt.setInt(1, tournamentID);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				statusReturned = rs.getString("status");
+			}
+			rs.close();
+		} catch (Exception e) {
+			System.out.println("SQL exception occurred " + e);
+		}
+		return statusReturned;
+	}
+
+	public int getTournamentID(Connect conn, String tournament_name) {
 		int tournament_ID = 0;
 		try {
 			String query = "SELECT id FROM olympics.Tournament WHERE tournament_name = ?";
@@ -373,7 +438,7 @@ public class Tournament {
 		return tournament_ID;
 	}
 
-	public String returnTournamentName(Connect conn, int id) {
+	public String getTournamentName(Connect conn, int id) {
 		String name = "";
 		try {
 			String query = "SELECT tournament_name FROM olympics.Tournament where id = ?";
@@ -392,7 +457,7 @@ public class Tournament {
 		return name;
 	}
 	
-	public String returnTournamentSport(Connect conn, int ID) {
+	public String getTournamentSport(Connect conn, int ID) {
 		String tournamentSport = "";
 		
 		try {
@@ -412,27 +477,15 @@ public class Tournament {
 		return tournamentSport;
 	}
 
-	public boolean deleteTournament(Connect conn, int tournament_id) {
-		boolean validation;
-		try {
-			String deleteTeams = "DELETE FROM olympics.Team WHERE tournament_id = ?";
-			String deleteTournament = "DELETE FROM olympics.Tournament WHERE id = ?";
+	public boolean verifyTournament(Connect conn, int tournament_id) {
+		boolean verify;
+		String state = getTournament_status(conn, tournament_id);
 
-			PreparedStatement pstmt = conn.getConn().prepareStatement(deleteTeams);
-			pstmt.setInt(1, tournament_id);
-			pstmt.executeUpdate();
+		verify = (!state.equals("Incomplete")) && (!state.equals("Completed"));
 
-			pstmt = conn.getConn().prepareStatement(deleteTournament);
-			pstmt.setInt(1, tournament_id);
-			pstmt.executeUpdate();
-
-			validation = true;
-		} catch (Exception ex) {
-			System.out.println("ERROR: " + ex.getMessage());
-			validation = false;
-		}
-		return validation;
-	}
+		return verify;
+	} // WIP
+	// Verifies if the tournament can be played or not
 
 	public void viewTournamentTable(Connect conn) {
 		try {
@@ -453,11 +506,11 @@ public class Tournament {
 		}
 	}
 
-	public void viewTournament(Connect conn, String tournament_name){
+	public void viewTournament(Connect conn, int tournamentID){
   	  try {
-            String query = "SELECT id, tournament_name, tournament_type FROM olympics.Tournament where tournament_name = ?";
+            String query = "SELECT id, tournament_name, tournament_type FROM olympics.Tournament where id = ?";
             PreparedStatement pstmt = conn.getConn().prepareStatement(query);
-            pstmt.setString(1, tournament_name);
+            pstmt.setInt(1, tournamentID);
             ResultSet rs = pstmt.executeQuery();
             while(rs.next()) {
                 //get tournament
@@ -486,6 +539,15 @@ public class Tournament {
         }     
   }
 
+  	public boolean certifyTeamCount(int count) {
+		for (int i = 0; i < 5; i++)
+			if (count == checkParticipantCap[i])
+				return true;
+
+		return false;
+	} // WIP
+	// This function tests everything part of a tournament to make sure its has all the necessary parts in order to use from start to finish
+
     public void results(Connect conn, int tournamentID){
     	//int matchID = match.getMatchID(conn, tournamentID);
     	String winner_A_name = new String();
@@ -512,7 +574,7 @@ public class Tournament {
     
     public void displayResults(Connect conn, String tournament_name) {
     	//local members
-		int tournamentID = returnTournamentID(conn, tournament_name);
+		int tournamentID = getTournamentID(conn, tournament_name);
 		//int matchID = match.getMatchID(conn, tournamentID);
 		int teamA = 0;
 		int teamB = 0;
@@ -564,35 +626,4 @@ public class Tournament {
             System.out.println("SQL exception occured" + e);
     	}
     }
-
-    public String getTournament_status(Connect conn, String tournamentName){
-		String statusReturned = null;
-		try {
-			String query = "SELECT status FROM olympics.Tournament WHERE tournament_name = ?";
-			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
-			pstmt.setString(1, tournamentName);
-			ResultSet rs = pstmt.executeQuery();
-			while(rs.next()) {
-				statusReturned = rs.getString("status");
-			}
-			rs.close();
-		} catch (Exception e) {
-			System.out.println("SQL exception occurred " + e);
-		}
-		return statusReturned;
-	}
-
-	public void setTournamentStatus(Connect conn, int tournamentID, String changeStatus) {
-		try {
-			String query = "UPDATE olympics.Tournament SET status = ? WHERE id = ?";
-			PreparedStatement pstmt = conn.getConn().prepareStatement(query);
-
-			pstmt.setString(1, changeStatus);
-			pstmt.setInt(2, tournamentID);
-			pstmt.executeUpdate();
-		} catch (Exception e) {
-			System.out.println("SQL exception occurred " + e);
-		}
-	}
-
 }

@@ -121,8 +121,6 @@ public class Countries {
         }
     } //
 
-    //////////////////////////////////////////////////////
-    // SQL Table Joining
     public void participatingCountries(Connect conn) {
         int redundantID = 0;
         try {
